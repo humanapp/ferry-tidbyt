@@ -13,6 +13,7 @@ jobs:
             - name: pull latest changes and run the deploy script
               uses: appleboy/ssh-action@v0.1.4
               with:
+                  debug: true
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USERNAME }}
                   key: ${{ secrets.SSH_CERT }}
