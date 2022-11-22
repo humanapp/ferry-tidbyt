@@ -13,10 +13,10 @@ jobs:
             - name: pull latest changes and run the deploy script
               uses: appleboy/ssh-action@v0.1.4
               with:
-                  debug: true
-                  host: ${{ secrets.SSH_HOST }}
-                  username: ${{ secrets.SSH_USERNAME }}
+                  host: ec2-3-135-25-251.us-east-2.compute.amazonaws.com
+                  username: ubuntu
                   key: ${{ secrets.SSH_CERT }}
+                  fingerprint: "17:29:95:9c:9d:9e:12:2f:11:ee:09:7d:2e:d6:ae:c9:52:65:44:4c"
                   port: 22
                   script: |
                       cd code/humanapp/ferry-tidbyt/
