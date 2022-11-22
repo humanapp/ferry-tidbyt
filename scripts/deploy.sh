@@ -9,7 +9,7 @@ exitOnError() {
 
 WORKING_PATH=$HOME/code/humanapp/ferry-tidbyt
 PWD=$(pwd)
-SERVICE='kingston'
+SERVICE='ferry-tidbyt'
 
 echo "Deploying"
 

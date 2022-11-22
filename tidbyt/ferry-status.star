@@ -4,7 +4,7 @@ load("encoding/json.star", "json")
 
 FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
 FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
-FERRY_STATUS_API = FERRY_STATUS_API_LOCALHOST
+FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
 
 def renderStatus(status):
     if (status["disposition"] == "docked-in-kingston"):
