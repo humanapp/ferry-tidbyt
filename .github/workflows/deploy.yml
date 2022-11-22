@@ -13,10 +13,9 @@ jobs:
             - name: pull latest changes and run the deploy script
               uses: appleboy/ssh-action@v0.1.4
               with:
-                  host: ${{ secrets.HOST }}
-                  username: ${{ secrets.USERNAME }}
-                  key: ${{ secrets.DEPLOYMENT_SECRET }}
-                  passphrase: ${{ secrets.PASSPHRASE }}
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  key: ${{ secrets.SSH_CERT }}
                   port: 22
                   script: |
                       cd code/humanapp/ferry-tidbyt/
