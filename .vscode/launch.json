@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "command": "npm run debug",
+            "name": "Run npm debug",
+            "request": "launch",
+            "type": "node-terminal",
+            "env": {
+            }
+        }
+    ]
+}

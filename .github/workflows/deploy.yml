@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        environment: prod
+
+        steps:
+            - name: pull latest changes and run the deploy script
+              uses: appleboy/ssh-action@v0.1.4
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  key: ${{ secrets.DEPLOYMENT_SECRET }}
+                  passphrase: ${{ secrets.PASSPHRASE }}
+                  port: 22
+                  script: |
+                      cd code/humanapp/ferry-tidbyt/
+                      git reset --hard
+                      git fetch --all
+                      git checkout ${{github.ref_name}}
+                      git pull
+                      bash scripts/deploy.sh
+
+    tag:
+        runs-on: ubuntu-latest
+        needs: deploy
+
+        steps:
+            - name: Add release tag
+              uses: actions/github-script@v3
+              with:
+                  github-token: ${{ github.token }}
+                  script: |
+                      github.git.createRef({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        ref: `refs/tags/prod-${new Date().toISOString().replace(/[^0-9T]/g, "")}`,
+                        sha: context.sha
+                      })
