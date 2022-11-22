@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc --build",
         "clean": "tsc --clean",
-        "start": "node build/server.js",
+        "start": "node build/index.js",
         "debug": "npm run build && npm run start",
         "prettier": "prettier --write ./src/**/*.ts"
     },
