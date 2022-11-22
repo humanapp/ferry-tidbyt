@@ -13,15 +13,11 @@ SERVICE='kingston'
 
 echo "Deploying"
 
-echo " #### Building service: "$SERVICE
 cd "$WORKING_PATH"
 exitOnError "command failed: cd"
 
-npm install
+npm install --only=prod
 exitOnError "command failed: npm install"
-
-npm run build
-exitOnError "command failed: npm run build"
 
 echo " #### Restarting service"
 pm2 restart $SERVICE
