@@ -2,3 +2,5 @@ node_modules
 #build
 env.json
 tidbyt/*.webp
+tidbyt/*.txt
+.DS_Store

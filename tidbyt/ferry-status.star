@@ -3,7 +3,7 @@ load("http.star", "http")
 load("encoding/json.star", "json")
 load("encoding/base64.star", "base64")
 
-BACKGROUND_IMG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAQVJREFUaEPtlzEPAUEQhef9TlFpVBqVRqVRaVQajStEIQpRiEIUotBdCCGEiJ8xsrd2byNHb2e2mZub6s2+me8O5SRlEBETEQjExAUx3joqw53Rnh3XiDy3DYm5jupoz/7mAWIOHCAgR218KBiBT8vHm6M+Of7yuFX+fQb+vo7G9BRKDNTKeERzdjZDn90kQMQWB2JytOYX2Q5oL67eAZ6D+YeB237RRnSWN9kO6K7u1gHuuB0gJEdv/ZDtgP7mwX79OwyY+P47yLAQvnd5JHUk26dRmAt2woRElAap7BHQBqgDdAR0B8j47ytWqRRQCigFlAJKAaWA4A4oBhWDikHFoGgMvgAhz+VFrzk0mgAAAABJRU5ErkJggg=="
+BACKGROUND_IMG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAMlJREFUaENjTFp+7T/DCAaMWWtuIAUAIwMDA3J4DH8+Y9GGWyM7BVRtvfsfFs8jkWZs2nlvZKeArn0PR3YKmHTo0X8GhpGY+EEJn5GBcfbxpyM7Cyw6/Wxkp4BVF16CywAYgCSMkcNn3HTlNc4sgN4MQm8wDgd5xt03347sLHDo7vuRXQiefvRxZKeAS88+j+yGkGN2+8jOAqMBMJoCRrPAaBkwgocEGRhHC8HRQnC0EBwtBEcLwREcAqO1wGg1OFoNjlaDI7oaBAC/0FSQnGL1JQAAAABJRU5ErkJggg=="
 
 FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
 FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
@@ -12,7 +12,7 @@ FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
 
 def renderStatus(status):
     if status["disposition"] == "docked-in-kingston":
-        return render.Text("Docked")
+        return render.Text("Docked", )
     if status["disposition"] == "traveling-to-kingston":
         return render.Text("Sailing to Kingston")
     if status["disposition"] == "docked-in-edmonds":
@@ -67,9 +67,14 @@ def main(config):
                 render.Image(src=base64.decode(BACKGROUND_IMG)),
                 render.Column(
                     children=[
-                        render.Marquee(
-                            width=64,
-                            child=renderStatus(status)
+                        render.Text(""),
+                        render.Text(""),
+                        render.Padding(
+                            pad=(1, 0, 1, 0),
+                            child=render.Marquee(
+                                width=64,
+                                child=renderStatus(status)
+                            ),
                         ),
                         renderDetail(status)
                     ],
