@@ -70,13 +70,16 @@ def main(config):
                         render.Text(""),
                         render.Text(""),
                         render.Padding(
-                            pad=(1, 0, 1, 0),
-                            child=render.Marquee(
-                                width=64,
-                                child=renderStatus(status)
+                            pad=(1, 0, 1, 1),
+                            child=render.Column(
+                                children=[render.Marquee(
+                                    width=62,
+                                    child=renderStatus(status)
+                                ),
+                                    renderDetail(status)
+                                ],
                             ),
                         ),
-                        renderDetail(status)
                     ],
                 )
             ],
