@@ -4,8 +4,8 @@ Display WSDOT ferry status in relation to the Kingston (WA) terminal on a Tidbyt
 
 ### One-time setup
 
-1. Install Node.JS 16+
-2. Install GIT
+1. Install Node.JS 18
+2. Install git
 3. Clone this repo
 4. CD to the repo folder
 5. Run `npm install`
@@ -20,7 +20,7 @@ This project assumes an AWS Secrets Manager instance is available. If you don't 
 * `AWS_ACCESS_KEY_ID`
 * `AWS_ACCESS_KEY_SECRET`
 
-    If you're using AWS Secrets Manager, include these in your `env.json` and store the rest in AWS.
+    If you're using AWS Secrets Manager, include the above in your `env.json` and store the rest in AWS.
 
 * `VESSELWATCH_APIKEY`
 
@@ -36,11 +36,11 @@ This project assumes an AWS Secrets Manager instance is available. If you don't 
 
 * `TIDBYT_DEVICE_ID`
 
-    Your Tidbyt device ID. It this from your Tidbyt mobile app.
+    Your Tidbyt device ID. Get this from your Tidbyt mobile app.
 
 * `TIDBYT_REFRESH_TOKEN`
 
-    This is a fun one to get. The Tidbyt API key available from the app wasn't working for me (not a good sign I suppose), but the `pixlet` command line tool is able to make successful calls to the API, so I inspected its http traffic and pulled out the refresh token.
+    This is a fun one to get. The Tidbyt API key available from the app wasn't working for me (not a good sign I suppose), but the `pixlet` command line tool is able to make successful calls to the API, so I inspected its http traffic and pulled out the refresh token. The token can be used to get an access token, and the access token works in the API calls.
 
 * `TIDBYT_ACCOUNT_ID`
 
