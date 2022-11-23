@@ -40,7 +40,7 @@ This project assumes an AWS Secrets Manager instance is available. If you don't 
 
 * `TIDBYT_REFRESH_TOKEN`
 
-    This is a fun one to get. The Tidbyt API key available from the app wasn't working for me (not a good sign I suppose), but the `pixlet` command line tool is able to make successful calls to the API, so I inspected its http traffic and pulled out the refresh token. The token can be used to get an access token, and the access token works in the API calls.
+    This is a fun one to get. The Tidbyt API key available from the app wasn't working for me (not a good sign I suppose), but the `pixlet` command line tool was able to make successful calls to the API, so I inspected its http traffic and pulled out the refresh token. The token can be used to get an access token, and the access token works in the API calls.
 
 * `TIDBYT_ACCOUNT_ID`
 
