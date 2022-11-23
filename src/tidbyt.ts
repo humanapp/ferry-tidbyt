@@ -71,7 +71,7 @@ async function updateTidbytAsync() {
                     deviceID: getSetting("TIDBYT_DEVICE_ID"),
                     image: webp,
                     installationID: "ferry",
-                    background: false,
+                    background: true,
                 };
                 const config = {
                     withCredentials: true,

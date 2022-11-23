@@ -44,7 +44,7 @@ This project assumes an AWS Secrets Manager instance is available. If you don't 
 
 * `TIDBYT_ACCOUNT_ID`
 
-    Same story as the refresh token. This is the base64-encoded value passed in the Authentication header when the `pixlet` app reauthenticates. I assume it's an account id, but don't really know. Decoded, it's a guid with a colon on the end ¯\_(ツ)_/¯.
+    Same story as the refresh token. This is the base64-encoded value passed in the Authentication header when the `pixlet` app reauthenticates. I assume it's an account id, but don't really know. Decoded, it's a guid with a colon on the end ¯\\_(ツ)_/¯.
 
 #### Example env.json
 
