@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initAsync = exports.isProductionEnv = exports.getSetting = void 0;
+exports.startAsync = exports.initAsync = exports.isProductionEnv = exports.getSetting = void 0;
 const fs_1 = __importDefault(require("fs"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const REFRESH_INTERVAL_MS = 30 * 1000;
 const settings = { env: {} };
 function applySettings(env, allowOverwrite) {
     Object.keys(env).forEach((key) => {
@@ -39,7 +40,7 @@ function isProductionEnv() {
     return getSetting("NODE_ENV", true) !== "development";
 }
 exports.isProductionEnv = isProductionEnv;
-async function loadEnvironmentAsync() {
+async function loadEnvironmentOnceAsync() {
     // Load environment from local env.json file
     try {
         const env = JSON.parse(fs_1.default.readFileSync("./env.json").toString());
@@ -81,17 +82,27 @@ async function loadEnvironmentAsync() {
         const env = JSON.parse(JSON.parse(secret)["env.json"]);
         applySettings(env, true); // do overwrite existing values
     }
-    catch (e) {
-        console.error(e);
+    catch (err) {
+        console.error(err.toString());
     }
 }
-/**
- * Loads environment settings.
- */
+async function refreshEnvironmentAsync() {
+    try {
+        await loadEnvironmentOnceAsync();
+    }
+    catch (err) {
+        console.error(err.toString());
+    }
+    finally {
+        setTimeout(async () => await refreshEnvironmentAsync(), REFRESH_INTERVAL_MS);
+    }
+}
 async function initAsync() {
-    await loadEnvironmentAsync();
-    // Reload the environment every 30 secs, to pick up changes
-    setInterval(loadEnvironmentAsync, 30000);
+    await loadEnvironmentOnceAsync();
 }
 exports.initAsync = initAsync;
+async function startAsync() {
+    setTimeout(async () => await refreshEnvironmentAsync(), REFRESH_INTERVAL_MS);
+}
+exports.startAsync = startAsync;
 //# sourceMappingURL=env.js.map

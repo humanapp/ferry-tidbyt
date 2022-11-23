@@ -22,37 +22,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const process_1 = __importDefault(require("process"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const env = __importStar(require("./env"));
+exports.initAsync = void 0;
 const vessels = __importStar(require("./vessels"));
-const rest = __importStar(require("./rest"));
-const tidbyt = __importStar(require("./tidbyt"));
-const server = __importStar(require("./server"));
-dotenv_1.default.config();
-process_1.default
-    .on("unhandledRejection", (reason, p) => {
-    console.error(reason, "Unhandled Rejection at ", p);
-})
-    .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception");
-});
+const server_1 = require("./server");
 async function initAsync() {
-    await env.initAsync();
-    await rest.initAsync();
+    server_1.server.get("/api/status", async (req, res) => {
+        const status = vessels.getVesselCurrentStatus();
+        if (status) {
+            return res
+                .status(200)
+                .header("Cache-Control", "no-cache, no-store")
+                .send(status);
+        }
+        else {
+            return res.status(404).send();
+        }
+    });
 }
-async function startAsync() {
-    await env.startAsync();
-    await vessels.startAsync();
-    await tidbyt.startAsync();
-    await server.startAsync();
-}
-(async () => {
-    await initAsync();
-    await startAsync();
-})();
-//# sourceMappingURL=index.js.map
+exports.initAsync = initAsync;
+//# sourceMappingURL=rest.js.map

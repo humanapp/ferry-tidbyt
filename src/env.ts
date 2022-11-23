@@ -1,6 +1,8 @@
 import fs from "fs";
 import AWS from "aws-sdk";
 
+const REFRESH_INTERVAL_MS = 30 * 1000;
+
 const settings: { env: { [key: string]: any } } = { env: {} };
 
 function applySettings(env: any, allowOverwrite: boolean) {
@@ -39,7 +41,7 @@ export function isProductionEnv(): boolean {
     return getSetting("NODE_ENV", true) !== "development";
 }
 
-async function loadEnvironmentAsync() {
+async function loadEnvironmentOnceAsync() {
     // Load environment from local env.json file
     try {
         const env = JSON.parse(fs.readFileSync("./env.json").toString());
@@ -88,17 +90,31 @@ async function loadEnvironmentAsync() {
         const env = JSON.parse(JSON.parse(secret)["env.json"]);
 
         applySettings(env, true); // do overwrite existing values
-    } catch (e) {
-        console.error(e);
+    } catch (err: any) {
+        console.error(err.toString());
     }
 }
 
-/**
- * Loads environment settings.
- */
-export async function initAsync() {
-    await loadEnvironmentAsync();
+async function refreshEnvironmentAsync() {
+    try {
+        await loadEnvironmentOnceAsync();
+    } catch (err: any) {
+        console.error(err.toString());
+    } finally {
+        setTimeout(
+            async () => await refreshEnvironmentAsync(),
+            REFRESH_INTERVAL_MS
+        );
+    }
+}
 
-    // Reload the environment every 30 secs, to pick up changes
-    setInterval(loadEnvironmentAsync, 30000);
+export async function initAsync() {
+    await loadEnvironmentOnceAsync();
+}
+
+export async function startAsync() {
+    setTimeout(
+        async () => await refreshEnvironmentAsync(),
+        REFRESH_INTERVAL_MS
+    );
 }

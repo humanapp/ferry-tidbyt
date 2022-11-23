@@ -74,11 +74,13 @@ async function refreshVesselStatusAsync(): Promise<
                 statusText: "Failed to get ferry schedule",
             };
         const schedule = getSchedule.data!;
+
         // Grab all the vessels on the route today
         const departureTimes = schedule.TerminalCombos[0].Times;
         const vesselIdSet = new Set<number>();
         departureTimes.forEach((dep) => vesselIdSet.add(dep.VesselID));
         const vessels: VesselLocation[] = [];
+
         // Get vessel current locations
         for (const vesselId of vesselIdSet) {
             const getVessel = await getVesselLocationAsync(vesselId);
@@ -178,8 +180,7 @@ async function refreshVesselStatusAsync(): Promise<
             // END
         }
 
-        // Fallback to a ferry travelling from kingston to edmonds. We might hit this condition when
-        // the route is running with only one boat.
+        // Fallback to a ferry travelling from kingston to edmonds (happens where there's only one boat).
         const travelingToEdmonds = vessels.find(
             (vessel) =>
                 !vessel.AtDock &&
@@ -234,11 +235,9 @@ async function refreshVesselStatusAsync(): Promise<
         setTimeout(
             async () => await refreshVesselStatusAsync(),
             REFRESH_INTERVAL_MS
-        );    
+        );
     }
 }
-
-export async function initAsync() {}
 
 export async function startAsync() {
     await refreshVesselStatusAsync();

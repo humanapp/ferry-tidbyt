@@ -13,8 +13,8 @@ jobs:
             - name: pull latest changes and run the deploy script
               uses: appleboy/ssh-action@v0.1.5
               with:
-                  host: ec2-3-135-25-251.us-east-2.compute.amazonaws.com
-                  username: ubuntu
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
                   key: ${{ secrets.SSH_CERT }}
                   port: 22
                   script: |

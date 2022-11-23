@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startAsync = exports.initAsync = void 0;
+exports.startAsync = void 0;
 const axios_1 = __importDefault(require("axios"));
 const env_1 = require("./env");
 const worker_1 = require("./worker");
@@ -25,7 +25,6 @@ async function checkCredentialsAsync() {
             headers: {
                 Authorization: `Basic ${(0, env_1.getSetting)("TIDBYT_ACCOUNT_ID")}`,
                 "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": "Go-http-client/1.1",
             },
         };
         const data = params.toString();
@@ -62,7 +61,6 @@ async function updateTidbytAsync() {
                     withCredentials: true,
                     headers: {
                         Authorization: `Bearer ${credentials === null || credentials === void 0 ? void 0 : credentials.access_token}`,
-                        "User-Agent": "Go-http-client/1.1",
                     },
                 };
                 const res = await axios_1.default.post(`https://api.tidbyt.com/v0/devices/${(0, env_1.getSetting)("TIDBYT_DEVICE_ID")}/push`, data, config);
@@ -70,12 +68,10 @@ async function updateTidbytAsync() {
         }
     }
     catch (err) {
-        console.error(`Failed to pixlet render. ${err.toString()}`);
+        console.error(`Tidbyt update failed: ${err.toString()}`);
     }
     setTimeout(async () => await updateTidbytAsync(), REFRESH_INTERVAL_MS);
 }
-async function initAsync() { }
-exports.initAsync = initAsync;
 async function startAsync() {
     await updateTidbytAsync();
 }

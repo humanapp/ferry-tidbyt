@@ -31,7 +31,6 @@ async function checkCredentialsAsync() {
             headers: {
                 Authorization: `Basic ${getSetting("TIDBYT_ACCOUNT_ID")}`,
                 "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": "Go-http-client/1.1",
             },
         };
         const data = params.toString();
@@ -78,7 +77,6 @@ async function updateTidbytAsync() {
                     withCredentials: true,
                     headers: {
                         Authorization: `Bearer ${credentials?.access_token}`,
-                        "User-Agent": "Go-http-client/1.1",
                     },
                 };
 
@@ -92,13 +90,11 @@ async function updateTidbytAsync() {
             }
         }
     } catch (err: any) {
-        console.error(`Failed to pixlet render. ${err.toString()}`);
+        console.error(`Tidbyt update failed: ${err.toString()}`);
     }
 
     setTimeout(async () => await updateTidbytAsync(), REFRESH_INTERVAL_MS);
 }
-
-export async function initAsync() {}
 
 export async function startAsync() {
     await updateTidbytAsync();

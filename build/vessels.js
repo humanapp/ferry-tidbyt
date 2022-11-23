@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startAsync = exports.initAsync = exports.getVesselCurrentStatus = void 0;
+exports.startAsync = exports.getVesselCurrentStatus = void 0;
 const axios_1 = __importDefault(require("axios"));
 const types_1 = require("./types");
 const env_1 = require("./env");
@@ -127,8 +127,7 @@ async function refreshVesselStatusAsync() {
             return cacheAndReturnStatus(status);
             // END
         }
-        // Fallback to a ferry travelling from kingston to edmonds. We might hit this condition when
-        // the route is running with only one boat.
+        // Fallback to a ferry travelling from kingston to edmonds (happens where there's only one boat).
         const travelingToEdmonds = vessels.find((vessel) => !vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             vessel.ArrivingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
@@ -172,8 +171,6 @@ async function refreshVesselStatusAsync() {
         setTimeout(async () => await refreshVesselStatusAsync(), REFRESH_INTERVAL_MS);
     }
 }
-async function initAsync() { }
-exports.initAsync = initAsync;
 async function startAsync() {
     await refreshVesselStatusAsync();
 }
