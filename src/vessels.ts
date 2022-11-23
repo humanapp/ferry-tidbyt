@@ -230,10 +230,16 @@ async function refreshVesselStatusAsync(): Promise<
             status: 500,
             statusText: err.toString(),
         };
+    } finally {
+        setTimeout(
+            async () => await refreshVesselStatusAsync(),
+            REFRESH_INTERVAL_MS
+        );    
     }
 }
 
-export async function initAsync() {
-    refreshVesselStatusAsync();
-    setInterval(refreshVesselStatusAsync, REFRESH_INTERVAL_MS);
+export async function initAsync() {}
+
+export async function startAsync() {
+    await refreshVesselStatusAsync();
 }

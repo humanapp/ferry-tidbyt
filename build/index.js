@@ -31,6 +31,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const env = __importStar(require("./env"));
 const vessels = __importStar(require("./vessels"));
 const routes = __importStar(require("./routes"));
+const tidbyt = __importStar(require("./tidbyt"));
 const server = __importStar(require("./server"));
 dotenv_1.default.config();
 process_1.default
@@ -44,9 +45,15 @@ async function initAsync() {
     await env.initAsync();
     await vessels.initAsync();
     await routes.initAsync();
+    await tidbyt.initAsync();
+}
+async function startAsync() {
+    await vessels.startAsync();
+    await tidbyt.startAsync();
+    await server.startAsync();
 }
 (async () => {
     await initAsync();
-    await server.startAsync();
+    await startAsync();
 })();
 //# sourceMappingURL=index.js.map

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initAsync = exports.getVesselCurrentStatus = void 0;
+exports.startAsync = exports.initAsync = exports.getVesselCurrentStatus = void 0;
 const axios_1 = __importDefault(require("axios"));
 const types_1 = require("./types");
 const env_1 = require("./env");
@@ -168,10 +168,14 @@ async function refreshVesselStatusAsync() {
             statusText: err.toString(),
         };
     }
+    finally {
+        setTimeout(async () => await refreshVesselStatusAsync(), REFRESH_INTERVAL_MS);
+    }
 }
-async function initAsync() {
-    refreshVesselStatusAsync();
-    setInterval(refreshVesselStatusAsync, REFRESH_INTERVAL_MS);
-}
+async function initAsync() { }
 exports.initAsync = initAsync;
+async function startAsync() {
+    await refreshVesselStatusAsync();
+}
+exports.startAsync = startAsync;
 //# sourceMappingURL=vessels.js.map

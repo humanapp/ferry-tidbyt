@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import * as env from "./env";
 import * as vessels from "./vessels";
 import * as routes from "./routes";
+import * as tidbyt from "./tidbyt";
 import * as server from "./server";
 
 dotenv.config();
@@ -19,9 +20,16 @@ async function initAsync() {
     await env.initAsync();
     await vessels.initAsync();
     await routes.initAsync();
+    await tidbyt.initAsync();
+}
+
+async function startAsync() {
+    await vessels.startAsync();
+    await tidbyt.startAsync();
+    await server.startAsync();
 }
 
 (async () => {
     await initAsync();
-    await server.startAsync();
+    await startAsync();
 })();

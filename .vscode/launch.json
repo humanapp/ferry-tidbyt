@@ -6,6 +6,9 @@
             "request": "launch",
             "type": "node-terminal",
             "env": {
+                //"https_proxy": "http://127.0.0.1:8866",
+                //"http_proxy": "http://127.0.0.1:8866",
+                //"NODE_TLS_REJECT_UNAUTHORIZED": "0"
             }
         }
     ]
