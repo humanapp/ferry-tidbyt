@@ -88,8 +88,8 @@ def renderFerry(status):
 def main(config):
     res = http.get(FERRY_STATUS_API)
     status = res.json()
-    status = json.decode(
-         "{\"disposition\":\"traveling-to-kingston\",\"name\":\"Spokane\",\"etaMins\":12,\"distPct\":0.48}")
+    # status = json.decode(
+    #     "{\"disposition\":\"traveling-to-kingston\",\"name\":\"Spokane\",\"etaMins\":12,\"distPct\":0.48}")
     # status = json.decode(
     #     "{\"disposition\":\"docked-in-kingston\",\"name\":\"Spokane\",\"stdMins\":10}")
     # status = json.decode(

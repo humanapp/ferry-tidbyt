@@ -2,6 +2,8 @@
 
 Display WSDOT ferry status in relation to the Kingston (WA) terminal on a Tidbyt device.
 
+![ferry-status](./media/ferry-status.png)
+
 ### One-time setup
 
 1. Install Node.JS 18
