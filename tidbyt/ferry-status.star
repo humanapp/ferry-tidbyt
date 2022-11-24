@@ -19,11 +19,11 @@ def renderStatus(status):
     if status["disposition"] == "docked-in-kingston":
         return render.Text("Docked", )
     if status["disposition"] == "traveling-to-kingston":
-        return render.Text("Sailing to Kingston")
+        return render.Text("Sailing")
     if status["disposition"] == "docked-in-edmonds":
-        return render.Text("At Edmonds")
+        return render.Text("Docked")
     if status["disposition"] == "traveling-to-edmonds":
-        return render.Text("Sailing to Edmonds")
+        return render.Text("Sailing")
     if status["disposition"] == "no-vessels-in-service":
         return render.Text("No vessel in service")
     return render.Text("")
@@ -88,8 +88,8 @@ def renderFerry(status):
 def main(config):
     res = http.get(FERRY_STATUS_API)
     status = res.json()
-    #status = json.decode(
-    #     "{\"disposition\":\"traveling-to-kingston\",\"name\":\"Spokane\",\"etaMins\":12,\"distPct\":0.48}")
+    status = json.decode(
+         "{\"disposition\":\"traveling-to-kingston\",\"name\":\"Spokane\",\"etaMins\":12,\"distPct\":0.48}")
     # status = json.decode(
     #     "{\"disposition\":\"docked-in-kingston\",\"name\":\"Spokane\",\"stdMins\":10}")
     # status = json.decode(
