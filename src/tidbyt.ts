@@ -95,6 +95,8 @@ async function updateTidbytAsync() {
                 if (res.status !== 200) {
                     throw new Error(res.statusText);
                 }
+
+                console.log("Tidbyt updated");
             }
         }
     } catch (err: any) {
