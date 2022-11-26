@@ -29,6 +29,9 @@ async function checkCredentialsAsync() {
         };
         const data = params.toString();
         const res = await axios_1.default.post("https://login.tidbyt.com/oauth2/token", data, config);
+        if (res.status !== 200) {
+            throw new Error(res.statusText);
+        }
         credentials = res.data;
         credentialsExpireAt = now + credentials.expires_in * 1000;
     }
@@ -55,7 +58,7 @@ async function updateTidbytAsync() {
                     deviceID: (0, env_1.getSetting)("TIDBYT_DEVICE_ID"),
                     image: webp,
                     installationID: "ferry",
-                    background: false,
+                    background: true,
                 };
                 const config = {
                     withCredentials: true,
@@ -64,6 +67,10 @@ async function updateTidbytAsync() {
                     },
                 };
                 const res = await axios_1.default.post(`https://api.tidbyt.com/v0/devices/${(0, env_1.getSetting)("TIDBYT_DEVICE_ID")}/push`, data, config);
+                if (res.status !== 200) {
+                    throw new Error(res.statusText);
+                }
+                console.log("Tidbyt updated");
             }
         }
     }

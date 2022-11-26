@@ -131,8 +131,8 @@ def main(config):
     #     "{\"disposition\":\"docked-in-kingston\",\"name\":\"Spokane\",\"stdMins\":10}")
     # status = json.decode(
     #     "{\"disposition\":\"docked-in-edmonds\",\"name\":\"Puyallup\",\"stdMins\":4}")
-    status = json.decode(
-         "{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Spokane\",\"etaMins\":2,\"distPct\":0.76}")
+    #status = json.decode(
+    #     "{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Spokane\",\"etaMins\":2,\"distPct\":0.76}")
     # status = json.decode(
     #     "{\"disposition\":\"no-vessels-in-service\"}")
 
