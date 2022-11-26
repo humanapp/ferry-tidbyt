@@ -1,6 +1,6 @@
 node_modules
 #build
 env.json
-tidbyt/*.webp
+tidbyt/ferry-status.webp
 tidbyt/*.txt
 .DS_Store
