@@ -93,7 +93,7 @@ def renderFerryCore(status):
 
 def renderFerry(status):
     maxDist = TRAVEL_DIST - FERRY_IMG_WIDTH
-    topPad = 7
+    topPad = 6
     if status["disposition"] == "docked-in-kingston":
         return render.Padding(
             pad=(DOCK_WIDTH, topPad, 0, 0),
