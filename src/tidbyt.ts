@@ -40,6 +40,10 @@ async function checkCredentialsAsync() {
             config
         );
 
+        if (res.status !== 200) {
+            throw new Error(res.statusText);
+        }
+
         credentials = res.data as Credentials;
         credentialsExpireAt = now + credentials.expires_in * 1000;
     } catch (err: any) {
@@ -87,6 +91,10 @@ async function updateTidbytAsync() {
                     data,
                     config
                 );
+
+                if (res.status !== 200) {
+                    throw new Error(res.statusText);
+                }
             }
         }
     } catch (err: any) {
