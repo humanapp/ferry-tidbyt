@@ -99,7 +99,7 @@ def renderFerry(status):
     if status["disposition"] == "traveling-to-kingston":
         leftPad = maxDist
         if "distPct" in status.keys():
-            leftPad = math.floor(maxDist * status["distPct"])
+            leftPad = maxDist * status["distPct"]
             return render.Padding(
                 pad=(leftPad, 5, 0, 0),
                 child=renderFerryCore(status)
@@ -112,7 +112,7 @@ def renderFerry(status):
     if status["disposition"] == "traveling-to-edmonds":
         leftPad = 0
         if "distPct" in status.keys():
-            leftPad = math.floor(maxDist * status["distPct"])
+            leftPad = maxDist * status["distPct"]
             return render.Padding(
                 pad=(leftPad, 5, 0, 0),
                 child=renderFerryCore(status)
