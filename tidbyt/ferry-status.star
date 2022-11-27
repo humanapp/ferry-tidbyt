@@ -140,6 +140,7 @@ def main(config):
     #     "{\"disposition\":\"no-vessels-in-service\"}")
 
     return render.Root(
+        delay=1000,
         child=render.Stack(
             children=[
                 render.Image(src=BACKGROUND_IMG),
