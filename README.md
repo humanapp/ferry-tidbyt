@@ -2,7 +2,7 @@
 
 Display WSDOT ferry status in relation to the Kingston (WA) terminal on a Tidbyt device.
 
-![ferry-status](./media/ferry-status.png)
+![ferry-status](./media/ferry-status.webp)
 
 ### One-time setup
 
