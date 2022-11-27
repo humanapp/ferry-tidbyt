@@ -12,7 +12,7 @@ WAKE_EAST_ANIM = base64.decode("UklGRtABAABXRUJQVlA4WAoAAAACAAAAEAAAAAAAQU5JTQYA
 
 FERRY_IMG_WIDTH = 18
 FERRY_IMG_HEIGHT = 11
-WAKE_ANIM_WIDTH = 30
+WAKE_ANIM_WIDTH = 17
 WAKE_ANIM_HEIGHT = 1
 DOCK_WIDTH = 6
 TRAVEL_DIST = 52
@@ -21,20 +21,6 @@ FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
 FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
 FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
 
-'''
-def renderStatus(status):
-    if status["disposition"] == "docked-in-kingston":
-        return render.Text("Docked", )
-    if status["disposition"] == "traveling-to-kingston":
-        return render.Text("Sailing")
-    if status["disposition"] == "docked-in-edmonds":
-        return render.Text("Docked")
-    if status["disposition"] == "traveling-to-edmonds":
-        return render.Text("Sailing")
-    if status["disposition"] == "no-vessels-in-service":
-        return render.Text("No vessel in service")
-    return render.Text("")
-'''
 
 def renderDetail(status):
     if status["disposition"] == "docked-in-kingston":
@@ -59,45 +45,32 @@ def renderDetail(status):
     return render.Text("")
 
 
-def renderFerryCore(status):
+def ferryImg(status):
     west = status["disposition"].find("kingston") >= 0
-    sailing = status["disposition"].startswith("traveling")
     if west:
         ferry = FERRY_WEST_IMG
     else:
         ferry = FERRY_EAST_IMG
-    if sailing:
-        if west:
-            return render.Stack(
-                children=[
-                    render.Image(src=ferry),
-                    render.Padding(
-                        pad=(FERRY_IMG_WIDTH - 3, FERRY_IMG_HEIGHT - 1, 0, 0),
-                        child=render.Image(src=WAKE_WEST_ANIM)
-                    )
-                ]
-            )
-        else:
-            return render.Stack(
-                children=[
-                    render.Image(src=ferry),
-                    render.Padding(
-                        pad=(3 - WAKE_ANIM_WIDTH, FERRY_IMG_HEIGHT - 1, 0, 0),
-                        child=render.Image(src=WAKE_EAST_ANIM)
-                    )
-                ]
-            )
+    return ferry
+
+
+def wakeAnim(status):
+    west = status["disposition"].find("kingston") >= 0
+    if west:
+        ferry = WAKE_WEST_ANIM
     else:
-        return render.Image(src=ferry)
+        ferry = WAKE_EAST_ANIM
+    return ferry
 
 
 def renderFerry(status):
     maxDist = TRAVEL_DIST - FERRY_IMG_WIDTH
+    ferry = ferryImg(status)
     topPad = 6
     if status["disposition"] == "docked-in-kingston":
         return render.Padding(
             pad=(DOCK_WIDTH, topPad, 0, 0),
-            child=renderFerryCore(status)
+            child=render.Image(src=ferry)
         )
     if status["disposition"] == "traveling-to-kingston":
         leftPad = maxDist
@@ -105,12 +78,12 @@ def renderFerry(status):
             leftPad = math.floor(maxDist * status["distPct"])
             return render.Padding(
                 pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
-                child=renderFerryCore(status)
+                child=render.Image(src=ferry)
             )
     if status["disposition"] == "docked-in-edmonds":
         return render.Padding(
             pad=(DOCK_WIDTH + maxDist, topPad, 0, 0),
-            child=renderFerryCore(status)
+            child=render.Image(src=ferry)
         )
     if status["disposition"] == "traveling-to-edmonds":
         leftPad = 0
@@ -118,11 +91,35 @@ def renderFerry(status):
             leftPad = math.floor(maxDist * status["distPct"])
             return render.Padding(
                 pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
-                child=renderFerryCore(status)
+                child=render.Image(src=ferry)
             )
     if status["disposition"] == "no-vessels-in-service":
-        return render.Text("")
-    return render.Text("")
+        return render.Box(width=0, height=0)
+    return render.Box(width=0, height=0)
+
+
+def renderWake(status):
+    west = status["disposition"].find("kingston") >= 0
+    sailing = status["disposition"].startswith("traveling")
+    wake = wakeAnim(status)
+    maxDist = TRAVEL_DIST - FERRY_IMG_WIDTH
+    topPad = 6
+    if sailing:
+        if west:
+            if "distPct" in status.keys():
+                leftPad = math.floor(maxDist * status["distPct"])
+                return render.Padding(
+                    pad=(3 + FERRY_IMG_WIDTH + leftPad, topPad + FERRY_IMG_HEIGHT - 1, 0, 0),
+                    child=render.Image(src=wake)
+                )
+        else:
+            if "distPct" in status.keys():
+                leftPad = math.floor(maxDist * status["distPct"])
+                return render.Padding(
+                    pad=(9 - WAKE_ANIM_WIDTH + leftPad, topPad + FERRY_IMG_HEIGHT - 1, 0, 0),
+                    child=render.Image(src=wake)
+                )
+    return render.Box(width=0, height=0)
 
 
 def main(config):
@@ -134,7 +131,7 @@ def main(config):
     #     "{\"disposition\":\"docked-in-kingston\",\"name\":\"Spokane\",\"stdMins\":10}")
     # status = json.decode(
     #     "{\"disposition\":\"docked-in-edmonds\",\"name\":\"Puyallup\",\"stdMins\":4}")
-    #status = json.decode(
+    # status = json.decode(
     #     "{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Spokane\",\"etaMins\":2,\"distPct\":0.76}")
     # status = json.decode(
     #     "{\"disposition\":\"no-vessels-in-service\"}")
@@ -145,6 +142,7 @@ def main(config):
             children=[
                 render.Image(src=BACKGROUND_IMG),
                 renderFerry(status),
+                renderWake(status),
                 render.Column(
                     expanded=True,
                     children=[
@@ -161,18 +159,3 @@ def main(config):
             ],
         )
     )
-
-
-'''
-render.Padding(
-    pad=(1, 16, 1, 1),
-    child=render.Column(
-        children=[render.Marquee(
-            width=62,
-            child=renderStatus(status)
-        ),
-            renderDetail(status)
-        ],
-    ),
-),
-'''
