@@ -14,49 +14,10 @@ type Credentials = {
     token_type: string;
 };
 
-let credentials: Credentials;
-let credentialsExpireAt: number;
-
-async function checkCredentialsAsync() {
-    try {
-        const now = Date.now();
-
-        if (credentials && credentialsExpireAt - now > 1000) return;
-
-        const params = new url.URLSearchParams();
-        params.set("grant_type", "refresh_token");
-        params.set("refresh_token", getSetting("TIDBYT_REFRESH_TOKEN"));
-        const config: AxiosRequestConfig = {
-            withCredentials: true,
-            headers: {
-                Authorization: `Basic ${getSetting("TIDBYT_ACCOUNT_ID")}`,
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-        };
-        const data = params.toString();
-        const res = await axios.post(
-            "https://login.tidbyt.com/oauth2/token",
-            data,
-            config
-        );
-
-        if (res.status !== 200) {
-            throw new Error(res.statusText);
-        }
-
-        credentials = res.data as Credentials;
-        credentialsExpireAt = now + credentials.expires_in * 1000;
-    } catch (err: any) {
-        console.error(`Tidbyt login failed: ${err.toString()}`);
-    }
-}
-
 let prevWebp: string;
 
 async function updateTidbytAsync() {
     try {
-        await checkCredentialsAsync();
-
         const renderExitCode = await spawnAsync(`pixlet`, [
             "render",
             "./tidbyt/ferry-status.star",
@@ -80,7 +41,7 @@ async function updateTidbytAsync() {
                 const config = {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${credentials?.access_token}`,
+                        Authorization: `Bearer ${getSetting("TIDBYT_APIKEY")}`
                     },
                 };
 

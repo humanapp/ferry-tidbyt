@@ -40,13 +40,9 @@ This project assumes an AWS Secrets Manager instance is available. If you don't 
 
     Your Tidbyt device ID. Get this from your Tidbyt mobile app.
 
-* `TIDBYT_REFRESH_TOKEN`
+* `TIDBYT_APIKEY`
 
-    This is a fun one to get. The Tidbyt API key available from the app wasn't working for me (not a good sign I suppose), but the `pixlet` command line tool was able to make successful calls to the API, so I inspected its http traffic and pulled out the refresh token. The refresh token can be used to get an access token, and the access token works in the API calls.
-
-* `TIDBYT_ACCOUNT_ID`
-
-    Same story as the refresh token. This is the base64-encoded value passed in the Authentication header when the `pixlet` app reauthenticates. I assume it's an account id, but don't really know. Decoded, it's a guid with a colon on the end ¯\\_(ツ)_/¯.
+    Your Tidbyt API Key. Get this from your Tidbyt mobile app.
 
 #### Example env.json
 
