@@ -6,14 +6,6 @@ import url from "url";
 
 const REFRESH_INTERVAL_MS = 15 * 1000;
 
-type Credentials = {
-    access_token: string;
-    expires_in: number;
-    refresh_token: string;
-    scope: string;
-    token_type: string;
-};
-
 let prevWebp: string;
 
 async function updateTidbytAsync() {
@@ -41,7 +33,7 @@ async function updateTidbytAsync() {
                 const config = {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${getSetting("TIDBYT_APIKEY")}`
+                        Authorization: `Bearer ${getSetting("TIDBYT_APIKEY")}`,
                     },
                 };
 
