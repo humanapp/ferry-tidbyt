@@ -125,7 +125,7 @@ async function refreshVesselStatusAsync(): Promise<
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === KINGSTON_TERMINAL_ID &&
-                vessel.LeftDock
+                (vessel.LeftDock || vessel.LeftDock === null)
         );
         if (travelingToKingston) {
             // Get the normalized distance travelled. 0 = at kingston, 1 = at edmonds
@@ -186,7 +186,7 @@ async function refreshVesselStatusAsync(): Promise<
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === EDMONDS_TERMINAL_ID &&
-                vessel.LeftDock
+                (vessel.LeftDock || vessel.LeftDock === null)
         );
         if (travelingToEdmonds) {
             const vesselPos: LatLon = {
