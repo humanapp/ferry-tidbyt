@@ -68,7 +68,7 @@ async function refreshVesselStatusAsync() {
         }
         // Get the distance between the terminals
         const distBetweenTerminals = (0, consts_1.DISTANCE_BETWEEN_TERMINALS)();
-        // Is there a vehicle docked in kingston?
+        // Is there a vessel docked in kingston?
         const dockedInKingston = vessels.find((vessel) => vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             vessel.ScheduledDeparture);

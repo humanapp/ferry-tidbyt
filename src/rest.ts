@@ -1,5 +1,7 @@
 import * as vessels from "./vessels";
 import { server } from "./server";
+import fs from "fs";
+import sharp from "sharp";
 
 export async function initAsync() {
     server.get("/api/status", async (req, res) => {
@@ -12,5 +14,19 @@ export async function initAsync() {
         } else {
             return res.status(404).send();
         }
+    });
+
+    server.get("/api/image", async (req, res) => {
+        const s = fs.readFileSync(
+            "./tidbyt/ferry-status.webp"
+        );
+
+        const b = await sharp(s).resize({
+            height: 320,
+            kernel: sharp.kernel.nearest
+        }).toBuffer();
+
+        res.header("Content-Type", "image/webp");
+        res.send(b);
     });
 }
