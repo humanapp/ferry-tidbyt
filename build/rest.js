@@ -46,10 +46,13 @@ async function initAsync() {
     });
     server_1.server.get("/api/image", async (req, res) => {
         const s = fs_1.default.readFileSync("./tidbyt/ferry-status.webp");
-        const b = await (0, sharp_1.default)(s).resize({
+        const b = await (0, sharp_1.default)(s, { pages: -1 })
+            .resize({
             height: 320,
-            kernel: sharp_1.default.kernel.nearest
-        }).toBuffer();
+            kernel: sharp_1.default.kernel.nearest,
+        })
+            .withMetadata()
+            .toBuffer();
         res.header("Content-Type", "image/webp");
         res.send(b);
     });

@@ -17,14 +17,15 @@ export async function initAsync() {
     });
 
     server.get("/api/image", async (req, res) => {
-        const s = fs.readFileSync(
-            "./tidbyt/ferry-status.webp"
-        );
+        const s = fs.readFileSync("./tidbyt/ferry-status.webp");
 
-        const b = await sharp(s).resize({
-            height: 320,
-            kernel: sharp.kernel.nearest
-        }).toBuffer();
+        const b = await sharp(s, { pages: -1 })
+            .resize({
+                height: 320,
+                kernel: sharp.kernel.nearest,
+            })
+            .withMetadata()
+            .toBuffer();
 
         res.header("Content-Type", "image/webp");
         res.send(b);
