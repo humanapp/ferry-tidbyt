@@ -40,24 +40,49 @@ DISPOSITION = "disposition"
 def renderDetail(ferry):
     if ferry == None:
         return render.Text("No vessels")
+    text = ""
     if ferry[DISPOSITION] == DOCKED_IN_KINGSTON:
         if "stdMins" in ferry.keys():
-            return render.Text("> dep %d mins" % ferry["stdMins"])
+            text = "> dep %d mins" % ferry["stdMins"]
         else:
-            return render.Text("Docked in KIN")
+            text = "Docked in KIN"
     if ferry[DISPOSITION] == TRAVELING_TO_KINGSTON:
         if "etaMins" in ferry.keys():
-            return render.Text("< eta %d mins" % ferry["etaMins"])
+            text = "< eta %d mins" % ferry["etaMins"]
         else:
-            return render.Text("< Sailing")
+            text = "< Sailing"
     if ferry[DISPOSITION] == DOCKED_IN_EDMONDS:
         if "stdMins" in ferry.keys():
-            return render.Text("< dep %d mins" % ferry["stdMins"])
+            text = "< dep %d mins" % ferry["stdMins"]
         else:
-            return render.Text("Docked in EDM")
+            text = "Docked in EDM"
     if ferry[DISPOSITION] == TRAVELING_TO_EDMONDS:
-        return render.Text("> Sailing")
-    return render.Box(width=0, height=0)
+        text = "> Sailing"
+    return render.Padding(
+        pad=(0, 17, 0, 0),
+        child=render.Column(
+            expanded=True,
+            children=[
+                render.Row(
+                    expanded=True,
+                    main_align="center",
+                    children=[
+                        render.Text(content=text)
+                    ]
+                ),
+                render.Row(
+                    expanded=True,
+                    main_align="center",
+                    children=[
+                        render.Padding(
+                            pad=(0, 1, 0, 0),
+                            child=render.Text(content=ferry["name"], font="tom-thumb", color="#9bc7e5")
+                        )
+                    ]
+                )
+            ]
+        )
+    )
 
 
 def largeFerryImg(ferry):
@@ -146,10 +171,10 @@ def renderLargeFerry(ferry):
         leftPad = maxDist
         if "distPct" in ferry.keys():
             leftPad = math.floor(maxDist * ferry["distPct"])
-            return render.Padding(
-                pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
-                child=render.Image(src=ferryImg)
-            )
+        return render.Padding(
+            pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
+            child=render.Image(src=ferryImg)
+        )
     if ferry[DISPOSITION] == DOCKED_IN_EDMONDS:
         return render.Padding(
             pad=(DOCK_WIDTH + maxDist, topPad, 0, 0),
@@ -159,10 +184,10 @@ def renderLargeFerry(ferry):
         leftPad = 0
         if "distPct" in ferry.keys():
             leftPad = math.floor(maxDist * ferry["distPct"])
-            return render.Padding(
-                pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
-                child=render.Image(src=ferryImg)
-            )
+    return render.Padding(
+        pad=(DOCK_WIDTH + leftPad, topPad, 0, 0),
+        child=render.Image(src=ferryImg)
+    )
     return render.Box(width=0, height=0)
 
 
@@ -253,19 +278,7 @@ def main(config):
                 renderSmallWake(smallFerryStatus),
                 renderLargeFerry(largeFerryStatus),
                 renderWake(largeFerryStatus),
-                render.Column(
-                    expanded=True,
-                    children=[
-                        render.Padding(
-                            pad=(0, 20, 0, 0),
-                            child=render.Row(
-                                expanded=True,
-                                main_align="center",
-                                children=[renderDetail(largeFerryStatus)]
-                            ),
-                        ),
-                    ],
-                )
+                renderDetail(largeFerryStatus)
             ],
         )
     )
