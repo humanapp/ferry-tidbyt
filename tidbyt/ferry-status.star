@@ -38,26 +38,26 @@ TRAVELING = "traveling"
 DISPOSITION = "disposition"
 
 def renderDetail(ferry):
-    if ferry == None:
-        return render.Text("No vessels")
     text = ""
-    if ferry[DISPOSITION] == DOCKED_IN_KINGSTON:
+    if ferry == None:
+        text = "No vessels"
+    elif ferry[DISPOSITION] == DOCKED_IN_KINGSTON:
         if "stdMins" in ferry.keys():
-            text = "> dep %d mins" % ferry["stdMins"]
+            text = "dep %d mins" % ferry["stdMins"]
         else:
-            text = "Docked in KIN"
-    if ferry[DISPOSITION] == TRAVELING_TO_KINGSTON:
+            text = "Docked"
+    elif ferry[DISPOSITION] == TRAVELING_TO_KINGSTON:
         if "etaMins" in ferry.keys():
-            text = "< eta %d mins" % ferry["etaMins"]
+            text = "eta %d mins" % ferry["etaMins"]
         else:
-            text = "< Sailing"
-    if ferry[DISPOSITION] == DOCKED_IN_EDMONDS:
+            text = "Sailing"
+    elif ferry[DISPOSITION] == DOCKED_IN_EDMONDS:
         if "stdMins" in ferry.keys():
-            text = "< dep %d mins" % ferry["stdMins"]
+            text = "dep %d mins" % ferry["stdMins"]
         else:
-            text = "Docked in EDM"
-    if ferry[DISPOSITION] == TRAVELING_TO_EDMONDS:
-        text = "> Sailing"
+            text = "Docked"
+    elif ferry[DISPOSITION] == TRAVELING_TO_EDMONDS:
+        text = "Sailing"
     return render.Padding(
         pad=(0, 17, 0, 0),
         child=render.Column(
