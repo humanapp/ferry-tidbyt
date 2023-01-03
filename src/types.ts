@@ -6,42 +6,37 @@ export type ServiceResult<T> = {
     data?: T;
 };
 
-export type VesselStatus_DockedInKingston = {
+export type DockedInKingston = {
     disposition: "docked-in-kingston";
     name: string;
     stdMins?: number;
 };
 
-export type VesselStatus_TravelingToKingston = {
+export type TravelingToKingston = {
     disposition: "traveling-to-kingston";
     name: string;
     etaMins?: number;
     distPct?: number;
 };
 
-export type VesselStatus_DockedInEdmonds = {
+export type DockedInEdmonds = {
     disposition: "docked-in-edmonds";
     name: string;
     stdMins?: number;
 };
 
-export type VesselStatus_TravelingToEdmonds = {
+export type TravelingToEdmonds = {
     disposition: "traveling-to-edmonds";
     name: string;
     etaMins?: number;
     distPct?: number;
 };
 
-export type VesselStatus_NoVesselsInService = {
-    disposition: "no-vessels-in-service";
-};
-
 export type VesselStatus =
-    | VesselStatus_DockedInKingston
-    | VesselStatus_TravelingToKingston
-    | VesselStatus_DockedInEdmonds
-    | VesselStatus_TravelingToEdmonds
-    | VesselStatus_NoVesselsInService;
+    | DockedInKingston
+    | TravelingToKingston
+    | DockedInEdmonds
+    | TravelingToEdmonds;
 
 export type VesselLocation = {
     VesselID: number;

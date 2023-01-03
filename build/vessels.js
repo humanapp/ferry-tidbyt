@@ -12,10 +12,10 @@ const consts_1 = require("./consts");
 const haversine_distance_1 = __importDefault(require("haversine-distance"));
 const util_1 = require("./util");
 const VESSELS_BASE_URI = "https://www.wsdot.wa.gov/ferries/api/vessels/rest";
-let cachedVesselStatus;
+let cachedStatus;
 const REFRESH_INTERVAL_MS = 15 * 1000;
 function getVesselCurrentStatus() {
-    return cachedVesselStatus;
+    return cachedStatus;
 }
 exports.getVesselCurrentStatus = getVesselCurrentStatus;
 async function getVesselLocationAsync(vesselId) {
@@ -29,14 +29,6 @@ async function getVesselLocationAsync(vesselId) {
     return {
         status: 200,
         data: vessel,
-    };
-}
-function cacheAndReturnStatus(status) {
-    console.log(JSON.stringify(status));
-    cachedVesselStatus = status;
-    return {
-        status: 200,
-        data: status,
     };
 }
 async function refreshVesselStatusAsync() {
@@ -68,8 +60,10 @@ async function refreshVesselStatusAsync() {
         }
         // Get the distance between the terminals
         const distBetweenTerminals = (0, consts_1.DISTANCE_BETWEEN_TERMINALS)();
+        const status = [];
         // Is there a vessel docked in kingston?
-        const dockedInKingston = vessels.find((vessel) => vessel.AtDock &&
+        const dockedInKingston = vessels.find((vessel) => vessel.VesselName &&
+            vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             vessel.ScheduledDeparture);
         if (dockedInKingston) {
@@ -77,21 +71,20 @@ async function refreshVesselStatusAsync() {
             const stdMins = Math.ceil((dockedInKingston.ScheduledDeparture.getTime() - now) /
                 1000 /
                 60);
-            const status = {
+            status.push({
                 disposition: "docked-in-kingston",
                 name: dockedInKingston.VesselName,
                 stdMins,
-            };
-            return cacheAndReturnStatus(status);
-            // END
+            });
         }
-        // Is there a vessel travelling to kingston?
-        const travelingToKingston = vessels.find((vessel) => !vessel.AtDock &&
+        // Is there a vessel traveling to kingston?
+        const travelingToKingston = vessels.find((vessel) => vessel.VesselName &&
+            !vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
             vessel.ArrivingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             !!vessel.LeftDock);
         if (travelingToKingston) {
-            // Get the normalized distance travelled. 0 = at kingston, 1 = at edmonds
+            // Get the normalized distance traveled. 0 = at kingston, 1 = at edmonds
             const vesselPos = {
                 lat: travelingToKingston.Latitude,
                 lon: travelingToKingston.Longitude,
@@ -103,32 +96,30 @@ async function refreshVesselStatusAsync() {
             const etaMins = travelingToKingston.Eta
                 ? Math.ceil((travelingToKingston.Eta.getTime() - now) / 1000 / 60)
                 : undefined;
-            const status = {
+            status.push({
                 disposition: "traveling-to-kingston",
                 name: travelingToKingston.VesselName,
                 etaMins,
                 distPct,
-            };
-            return cacheAndReturnStatus(status);
-            // END
+            });
         }
         // Is there a vessel docked in edmonds, yet to depart for kingston?
-        const dockedInEdmonds = vessels.find((vessel) => vessel.AtDock &&
+        const dockedInEdmonds = vessels.find((vessel) => vessel.VesselName &&
+            vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
             vessel.ScheduledDeparture);
         if (dockedInEdmonds) {
             // Get minutes until scheduled time of departure
             const stdMins = Math.ceil((dockedInEdmonds.ScheduledDeparture.getTime() - now) / 1000 / 60);
-            const status = {
+            status.push({
                 disposition: "docked-in-edmonds",
                 name: dockedInEdmonds.VesselName,
                 stdMins,
-            };
-            return cacheAndReturnStatus(status);
-            // END
+            });
         }
-        // Fallback to a ferry travelling from kingston to edmonds (happens where there's only one boat).
-        const travelingToEdmonds = vessels.find((vessel) => !vessel.AtDock &&
+        // Is there a vessel traveling to edmonds?
+        const travelingToEdmonds = vessels.find((vessel) => vessel.VesselName &&
+            !vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             vessel.ArrivingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
             (vessel.LeftDock || vessel.LeftDock === null));
@@ -143,22 +134,19 @@ async function refreshVesselStatusAsync() {
             const etaMins = travelingToEdmonds.Eta
                 ? Math.ceil((travelingToEdmonds.Eta.getTime() - now) / 1000 / 60)
                 : undefined;
-            const status = {
+            status.push({
                 disposition: "traveling-to-edmonds",
                 name: travelingToEdmonds.VesselName,
                 etaMins,
                 distPct,
-            };
-            return cacheAndReturnStatus(status);
-            // END
+            });
         }
-        // No ferries running right now apparently.
-        {
-            const status = {
-                disposition: "no-vessels-in-service",
-            };
-            return cacheAndReturnStatus(status);
-        }
+        console.log(JSON.stringify(status));
+        cachedStatus = status;
+        return {
+            status: 200,
+            data: status,
+        };
     }
     catch (err) {
         console.error(`Failed to get vessel status: ${err.toString()}`);
