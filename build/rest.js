@@ -30,8 +30,14 @@ exports.initAsync = void 0;
 const vessels = __importStar(require("./vessels"));
 const server_1 = require("./server");
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const sharp_1 = __importDefault(require("sharp"));
+const static_1 = __importDefault(require("@fastify/static"));
+const fileCache = {};
 async function initAsync() {
+    server_1.server.register(static_1.default, {
+        root: path_1.default.join(__dirname, "../public"),
+    });
     server_1.server.get("/api/status", async (req, res) => {
         const status = vessels.getVesselCurrentStatus();
         if (status) {
@@ -45,16 +51,22 @@ async function initAsync() {
         }
     });
     server_1.server.get("/api/image", async (req, res) => {
-        const s = fs_1.default.readFileSync("./tidbyt/ferry-status.webp");
-        const b = await (0, sharp_1.default)(s, { pages: -1 })
-            .resize({
-            height: 320,
-            kernel: sharp_1.default.kernel.nearest,
-        })
-            .withMetadata()
-            .toBuffer();
+        const height = parseInt(req.query["h"] || "0");
         res.header("Content-Type", "image/webp");
-        res.send(b);
+        const s = fs_1.default.readFileSync("./tidbyt/ferry-status.webp");
+        if (height > 0) {
+            const b = await (0, sharp_1.default)(s, { pages: -1 })
+                .resize({
+                height,
+                kernel: sharp_1.default.kernel.nearest,
+            })
+                .withMetadata()
+                .toBuffer();
+            res.send(b);
+        }
+        else {
+            res.send(s);
+        }
     });
 }
 exports.initAsync = initAsync;

@@ -1,9 +1,19 @@
 import * as vessels from "./vessels";
 import { server } from "./server";
 import fs from "fs";
+import path from "path";
 import sharp from "sharp";
+import fastifystatic from "@fastify/static";
+
+const fileCache: {
+    [route: string]: Buffer;
+} = {};
 
 export async function initAsync() {
+    server.register(fastifystatic, {
+        root: path.join(__dirname, "../public"),
+    });
+
     server.get("/api/status", async (req, res) => {
         const status = vessels.getVesselCurrentStatus();
         if (status) {
@@ -17,17 +27,24 @@ export async function initAsync() {
     });
 
     server.get("/api/image", async (req, res) => {
-        const s = fs.readFileSync("./tidbyt/ferry-status.webp");
-
-        const b = await sharp(s, { pages: -1 })
-            .resize({
-                height: 320,
-                kernel: sharp.kernel.nearest,
-            })
-            .withMetadata()
-            .toBuffer();
+        const height = parseInt((req.query as any)["h"] || "0");
 
         res.header("Content-Type", "image/webp");
-        res.send(b);
+
+        const s = fs.readFileSync("./tidbyt/ferry-status.webp");
+
+        if (height > 0) {
+            const b = await sharp(s, { pages: -1 })
+                .resize({
+                    height,
+                    kernel: sharp.kernel.nearest,
+                })
+                .withMetadata()
+                .toBuffer();
+
+            res.send(b);
+        } else {
+            res.send(s);
+        }
     });
 }

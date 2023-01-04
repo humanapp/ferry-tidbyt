@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Ferry Status</title>
+	<link rel="icon" type="image/png" href="/favicon.png" />
+	<style type="text/css">
+        body {
+            background-color: black;
+            margin: 0;
+            padding: 0;
+        }
+		img {
+			image-rendering: pixelated;
+			image-rendering: -moz-crisp-edges;
+			image-rendering: crisp-edges;
+			width: 100%;
+			mask-size: contain;
+			-webkit-mask-size: contain;
+			mask-image: url("./mask.png");
+			-webkit-mask-image: url("./mask.png");
+            user-select: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<img id="render" src="/api/image" />
+	</div>
+
+    <script>
+        setInterval(() => {
+            let imageElem = document.getElementById("render");
+            imageElem.src = "/api/image?" + new Date().getTime()
+        }, 15 * 1000);
+    </script>
+</body>
