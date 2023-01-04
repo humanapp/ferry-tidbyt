@@ -39,6 +39,9 @@ DISPOSITION = "disposition"
 
 def renderDetail(ferry):
     text = ""
+    name = ""
+    if ferry != None:
+        name = ferry["name"]
     if ferry == None:
         text = "No vessels"
     elif ferry[DISPOSITION] == DOCKED_IN_KINGSTON:
@@ -76,7 +79,7 @@ def renderDetail(ferry):
                     children=[
                         render.Padding(
                             pad=(0, 1, 0, 0),
-                            child=render.Text(content=ferry["name"], font="tom-thumb", color="#9bc7e5")
+                            child=render.Text(content=name, font="tom-thumb", color="#9bc7e5")
                         )
                     ]
                 )
