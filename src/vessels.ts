@@ -5,6 +5,8 @@ import {
     fixupVesselLocationFields,
     VesselStatus,
     LatLon,
+    DockedInEdmonds,
+    DockedInKingston,
 } from "./types";
 import { getSetting } from "./env";
 import { getScheduleAsync } from "./schedule";
@@ -49,38 +51,51 @@ async function getVesselLocationAsync(
     };
 }
 
+async function getVesselsOnRouteAsync(): Promise<
+    ServiceResult<VesselLocation[]>
+> {
+    const vesres = await axios.get(
+        `${VESSELS_BASE_URI}/vessellocations?apiaccesscode=${getSetting(
+            "VESSELWATCH_APIKEY"
+        )}`
+    );
+
+    let vessels = vesres.data as VesselLocation[];
+    if (!vessels) {
+        return {
+            status: 404,
+        };
+    }
+
+    vessels = vessels
+        .filter((ves) => ves.InService)
+        .filter(
+            (ves) =>
+                ves.ArrivingTerminalID === KINGSTON_TERMINAL_ID ||
+                ves.DepartingTerminalID === KINGSTON_TERMINAL_ID ||
+                ves.ArrivingTerminalID === EDMONDS_TERMINAL_ID ||
+                ves.DepartingTerminalID === EDMONDS_TERMINAL_ID
+        );
+
+    for (const vessel of vessels) {
+        fixupVesselLocationFields(vessel);
+    }
+
+    return {
+        status: 200,
+        data: vessels,
+    };
+}
+
 async function refreshVesselStatusAsync(): Promise<
     ServiceResult<VesselStatus[]>
 > {
     try {
         const now = Date.now();
 
-        // Get today's schedule of departures from edmonds to kingston
-        const getSchedule = await getScheduleAsync();
-        if (getSchedule.status !== 200)
-            return {
-                status: 404,
-                statusText: "Failed to get ferry schedule",
-            };
-        const schedule = getSchedule.data!;
-
-        // Grab all the vessels on the route today
-        const departureTimes = schedule.TerminalCombos[0].Times;
-        const vesselIdSet = new Set<number>();
-        departureTimes.forEach((dep) => vesselIdSet.add(dep.VesselID));
-        const vessels: VesselLocation[] = [];
-
-        // Get vessel current locations
-        for (const vesselId of vesselIdSet) {
-            const getVessel = await getVesselLocationAsync(vesselId);
-            if (getVessel.status !== 200)
-                return {
-                    status: 404,
-                    statusText: "Failed to get vessel location",
-                };
-            const vessel = getVessel.data!;
-            vessels.push(vessel);
-        }
+        // Fetch all active vessels on the route
+        const getVesOnRoute = await getVesselsOnRouteAsync();
+        const vessels = getVesOnRoute.data ?? [];
 
         // Get the distance between the terminals
         const distBetweenTerminals = DISTANCE_BETWEEN_TERMINALS();
@@ -92,21 +107,21 @@ async function refreshVesselStatusAsync(): Promise<
             (vessel) =>
                 vessel.VesselName &&
                 vessel.AtDock &&
-                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
-                vessel.ScheduledDeparture
+                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID
         );
         if (dockedInKingston) {
-            // Get minutes until scheduled time of departure
-            const stdMins = Math.ceil(
-                (dockedInKingston.ScheduledDeparture.getTime() - now) /
-                    1000 /
-                    60
-            );
-            status.push({
+            const st: DockedInKingston = {
                 disposition: "docked-in-kingston",
                 name: dockedInKingston.VesselName,
-                stdMins,
-            });
+            };
+            // Get minutes until scheduled time of departure
+            if (dockedInKingston.ScheduledDeparture)
+                st.stdMins = Math.ceil(
+                    (dockedInKingston.ScheduledDeparture.getTime() - now) /
+                        1000 /
+                        60
+                );
+            status.push(st);
         }
 
         // Is there a vessel traveling to kingston?
@@ -153,19 +168,21 @@ async function refreshVesselStatusAsync(): Promise<
             (vessel) =>
                 vessel.VesselName &&
                 vessel.AtDock &&
-                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
-                vessel.ScheduledDeparture
+                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID
         );
         if (dockedInEdmonds) {
-            // Get minutes until scheduled time of departure
-            const stdMins = Math.ceil(
-                (dockedInEdmonds.ScheduledDeparture.getTime() - now) / 1000 / 60
-            );
-            status.push({
+            const st: DockedInEdmonds = {
                 disposition: "docked-in-edmonds",
                 name: dockedInEdmonds.VesselName,
-                stdMins,
-            });
+            };
+            // Get minutes until scheduled time of departure
+            if (dockedInEdmonds.ScheduledDeparture)
+                st.stdMins = Math.ceil(
+                    (dockedInEdmonds.ScheduledDeparture.getTime() - now) /
+                        1000 /
+                        60
+                );
+            status.push(st);
         }
 
         // Is there a vessel traveling to edmonds?
