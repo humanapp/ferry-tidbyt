@@ -79,11 +79,16 @@ async function refreshVesselStatusAsync() {
             status.push(st);
         }
         // Is there a vessel traveling to kingston?
-        const travelingToKingston = vessels.find((vessel) => vessel.VesselName &&
+        let travelingToKingston = vessels.find((vessel) => vessel.VesselName &&
             !vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
             vessel.ArrivingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
-            !!vessel.LeftDock);
+            (!!vessel.LeftDock || vessel.LeftDock === null));
+        if (!travelingToKingston)
+            travelingToKingston = vessels.find((vessel) => vessel.VesselName &&
+                !vessel.AtDock &&
+                vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
+                (!!vessel.LeftDock || vessel.LeftDock === null));
         if (travelingToKingston) {
             // Get the normalized distance traveled. 0 = at kingston, 1 = at edmonds
             const vesselPos = {
@@ -121,11 +126,16 @@ async function refreshVesselStatusAsync() {
             status.push(st);
         }
         // Is there a vessel traveling to edmonds?
-        const travelingToEdmonds = vessels.find((vessel) => vessel.VesselName &&
+        let travelingToEdmonds = vessels.find((vessel) => vessel.VesselName &&
             !vessel.AtDock &&
             vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
             vessel.ArrivingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
-            (vessel.LeftDock || vessel.LeftDock === null));
+            (!!vessel.LeftDock || vessel.LeftDock === null));
+        if (!travelingToEdmonds)
+            travelingToEdmonds = vessels.find((vessel) => vessel.VesselName &&
+                !vessel.AtDock &&
+                vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
+                (!!vessel.LeftDock || vessel.LeftDock === null));
         if (travelingToEdmonds) {
             const vesselPos = {
                 lat: travelingToEdmonds.Latitude,

@@ -125,14 +125,22 @@ async function refreshVesselStatusAsync(): Promise<
         }
 
         // Is there a vessel traveling to kingston?
-        const travelingToKingston = vessels.find(
+        let travelingToKingston = vessels.find(
             (vessel) =>
                 vessel.VesselName &&
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === KINGSTON_TERMINAL_ID &&
-                !!vessel.LeftDock
+                (!!vessel.LeftDock || vessel.LeftDock === null)
         );
+        if (!travelingToKingston)
+            travelingToKingston = vessels.find(
+                (vessel) =>
+                    vessel.VesselName &&
+                    !vessel.AtDock &&
+                    vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
+                    (!!vessel.LeftDock || vessel.LeftDock === null)
+            );
         if (travelingToKingston) {
             // Get the normalized distance traveled. 0 = at kingston, 1 = at edmonds
             const vesselPos: LatLon = {
@@ -186,14 +194,22 @@ async function refreshVesselStatusAsync(): Promise<
         }
 
         // Is there a vessel traveling to edmonds?
-        const travelingToEdmonds = vessels.find(
+        let travelingToEdmonds = vessels.find(
             (vessel) =>
                 vessel.VesselName &&
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === EDMONDS_TERMINAL_ID &&
-                (vessel.LeftDock || vessel.LeftDock === null)
+                (!!vessel.LeftDock || vessel.LeftDock === null)
         );
+        if (!travelingToEdmonds)
+            travelingToEdmonds = vessels.find(
+                (vessel) =>
+                    vessel.VesselName &&
+                    !vessel.AtDock &&
+                    vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
+                    (!!vessel.LeftDock || vessel.LeftDock === null)
+            );
         if (travelingToEdmonds) {
             const vesselPos: LatLon = {
                 lat: travelingToEdmonds.Latitude,
