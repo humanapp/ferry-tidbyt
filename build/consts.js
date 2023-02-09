@@ -3,10 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DISTANCE_BETWEEN_TERMINALS = exports.EDMONDS_TERMINAL_LATLON = exports.KINGSTON_TERMINAL_LATLON = exports.EDMONDS_TERMINAL_ID = exports.KINGSTON_TERMINAL_ID = void 0;
+exports.DISTANCE_BETWEEN_TERMINALS = exports.EDMONDS_TERMINAL_LATLON = exports.KINGSTON_TERMINAL_LATLON = exports.ED_KING_SCHED_ROUTE_ID = exports.ED_KING_SCHEDULE_ID = exports.ED_KING_ROUTE_ID = exports.EDMONDS_TERMINAL_ID = exports.KINGSTON_TERMINAL_ID = void 0;
 const haversine_distance_1 = __importDefault(require("haversine-distance"));
 exports.KINGSTON_TERMINAL_ID = 12;
 exports.EDMONDS_TERMINAL_ID = 8;
+exports.ED_KING_ROUTE_ID = 6;
+exports.ED_KING_SCHEDULE_ID = 182;
+exports.ED_KING_SCHED_ROUTE_ID = 2116;
 exports.KINGSTON_TERMINAL_LATLON = {
     lat: 47.813498,
     lon: -122.385828,

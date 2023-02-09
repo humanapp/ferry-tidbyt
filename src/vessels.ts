@@ -107,7 +107,8 @@ async function refreshVesselStatusAsync(): Promise<
             (vessel) =>
                 vessel.VesselName &&
                 vessel.AtDock &&
-                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID
+                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
+                !!vessel.ArrivingTerminalID
         );
         if (dockedInKingston) {
             const st: DockedInKingston = {
@@ -176,7 +177,8 @@ async function refreshVesselStatusAsync(): Promise<
             (vessel) =>
                 vessel.VesselName &&
                 vessel.AtDock &&
-                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID
+                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
+                !!vessel.ArrivingTerminalID
         );
         if (dockedInEdmonds) {
             const st: DockedInEdmonds = {

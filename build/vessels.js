@@ -65,7 +65,8 @@ async function refreshVesselStatusAsync() {
         // Is there a vessel docked in kingston?
         const dockedInKingston = vessels.find((vessel) => vessel.VesselName &&
             vessel.AtDock &&
-            vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID);
+            vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID &&
+            !!vessel.ArrivingTerminalID);
         if (dockedInKingston) {
             const st = {
                 disposition: "docked-in-kingston",
@@ -112,7 +113,8 @@ async function refreshVesselStatusAsync() {
         // Is there a vessel docked in edmonds, yet to depart for kingston?
         const dockedInEdmonds = vessels.find((vessel) => vessel.VesselName &&
             vessel.AtDock &&
-            vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID);
+            vessel.DepartingTerminalID === consts_1.EDMONDS_TERMINAL_ID &&
+            !!vessel.ArrivingTerminalID);
         if (dockedInEdmonds) {
             const st = {
                 disposition: "docked-in-edmonds",

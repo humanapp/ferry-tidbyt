@@ -3,6 +3,9 @@ import haversineDistance from "haversine-distance";
 
 export const KINGSTON_TERMINAL_ID = 12;
 export const EDMONDS_TERMINAL_ID = 8;
+export const ED_KING_ROUTE_ID = 6;
+export const ED_KING_SCHEDULE_ID = 182;
+export const ED_KING_SCHED_ROUTE_ID = 2116;
 
 export const KINGSTON_TERMINAL_LATLON: LatLon = {
     lat: 47.813498,
