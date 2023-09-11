@@ -26,7 +26,7 @@ TRAVEL_DIST = 52
 
 FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
 FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
-FERRY_STATUS_API = FERRY_STATUS_API_LOCALHOST
+FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
 
 DOCKED_IN_KINGSTON = "docked-in-kingston"
 TRAVELING_TO_KINGSTON = "traveling-to-kingston"
