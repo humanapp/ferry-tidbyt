@@ -21,7 +21,7 @@ async function updateTidbytAsync() {
         }
         else {
             const webp = fs_1.default.readFileSync("./tidbyt/ferry-status.webp", "base64");
-            if (prevWebp !== webp) {
+            if (false && prevWebp !== webp) {
                 prevWebp = webp;
                 const data = {
                     deviceID: (0, env_1.getSetting)("TIDBYT_DEVICE_ID"),

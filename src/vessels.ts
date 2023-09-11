@@ -15,9 +15,11 @@ import {
     EDMONDS_TERMINAL_ID,
     KINGSTON_TERMINAL_ID,
     KINGSTON_TERMINAL_LATLON,
+    ED_KING_SCHED_ROUTE_ABBREV,
 } from "./consts";
 import haversineDistance from "haversine-distance";
 import { clamp } from "./util";
+import testVessels from "./testVessels.json";
 
 const VESSELS_BASE_URI = "https://www.wsdot.wa.gov/ferries/api/vessels/rest";
 
@@ -69,6 +71,7 @@ async function getVesselsOnRouteAsync(): Promise<
 
     vessels = vessels
         .filter((ves) => ves.InService)
+        .filter((ves) => !!ves.VesselName)
         .filter(
             (ves) =>
                 ves.ArrivingTerminalID === KINGSTON_TERMINAL_ID ||
@@ -76,6 +79,9 @@ async function getVesselsOnRouteAsync(): Promise<
                 ves.ArrivingTerminalID === EDMONDS_TERMINAL_ID ||
                 ves.DepartingTerminalID === EDMONDS_TERMINAL_ID
         );
+
+    //vessels = testVessels as any;
+    //console.log(JSON.stringify(vessels));
 
     for (const vessel of vessels) {
         fixupVesselLocationFields(vessel);
@@ -102,146 +108,181 @@ async function refreshVesselStatusAsync(): Promise<
 
         const status: VesselStatus[] = [];
 
-        // Is there a vessel docked in kingston?
-        const dockedInKingston = vessels.find(
-            (vessel) =>
-                vessel.VesselName &&
+        for (const vessel of vessels) {
+            // Is the vessel docked in kingston?
+            const isDockedInKingston =
                 vessel.AtDock &&
-                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
-                !!vessel.ArrivingTerminalID
-        );
-        if (dockedInKingston) {
-            const st: DockedInKingston = {
-                disposition: "docked-in-kingston",
-                name: dockedInKingston.VesselName,
-            };
-            // Get minutes until scheduled time of departure
-            if (dockedInKingston.ScheduledDeparture)
-                st.stdMins = Math.ceil(
-                    (dockedInKingston.ScheduledDeparture.getTime() - now) /
-                        1000 /
-                        60
-                );
-            status.push(st);
-        }
+                vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID;
+            /*
+                && (!!vessel.ArrivingTerminalID ||
+                    !vessel.OpRouteAbbrev?.includes(
+                        ED_KING_SCHED_ROUTE_ABBREV
+                    ));
+                */
+            if (isDockedInKingston) {
+                const st: DockedInKingston = {
+                    order: 1,
+                    disposition: "docked-in-kingston",
+                    name: vessel.VesselName,
+                };
+                // Get minutes until scheduled time of departure
+                if (vessel.ScheduledDeparture)
+                    st.stdMins = Math.ceil(
+                        (vessel.ScheduledDeparture.getTime() - now) / 1000 / 60
+                    );
+                status.push(st);
+                continue;
+            }
 
-        // Is there a vessel traveling to kingston?
-        let travelingToKingston = vessels.find(
-            (vessel) =>
-                vessel.VesselName &&
+            // Is the vessel traveling to kingston?
+            let isTravelingToKingston =
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === KINGSTON_TERMINAL_ID &&
-                (!!vessel.LeftDock || vessel.LeftDock === null)
-        );
-        if (!travelingToKingston)
-            travelingToKingston = vessels.find(
-                (vessel) =>
-                    vessel.VesselName &&
+                (!!vessel.LeftDock || vessel.LeftDock === null);
+
+            if (!isTravelingToKingston)
+                isTravelingToKingston =
                     !vessel.AtDock &&
                     vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
-                    (!!vessel.LeftDock || vessel.LeftDock === null)
-            );
-        if (travelingToKingston) {
-            // Get the normalized distance traveled. 0 = at kingston, 1 = at edmonds
-            const vesselPos: LatLon = {
-                lat: travelingToKingston.Latitude,
-                lon: travelingToKingston.Longitude,
-            };
-            const distToKingston = haversineDistance(
-                vesselPos,
-                KINGSTON_TERMINAL_LATLON
-            );
-            const distPct = clamp(
-                0,
-                1,
-                Math.round(100 * (1 - distToKingston / distBetweenTerminals)) /
-                    100
-            );
-            // Get minutes until estimated time of arrival
-            const etaMins = travelingToKingston.Eta
-                ? Math.ceil(
-                      (travelingToKingston.Eta.getTime() - now) / 1000 / 60
-                  )
-                : undefined;
-            status.push({
-                disposition: "traveling-to-kingston",
-                name: travelingToKingston.VesselName,
-                etaMins,
-                distPct,
-            });
-        }
+                    (!!vessel.LeftDock || vessel.LeftDock === null);
 
-        // Is there a vessel docked in edmonds, yet to depart for kingston?
-        const dockedInEdmonds = vessels.find(
-            (vessel) =>
-                vessel.VesselName &&
-                vessel.AtDock &&
-                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID &&
-                !!vessel.ArrivingTerminalID
-        );
-        if (dockedInEdmonds) {
-            const st: DockedInEdmonds = {
-                disposition: "docked-in-edmonds",
-                name: dockedInEdmonds.VesselName,
-            };
-            // Get minutes until scheduled time of departure
-            if (dockedInEdmonds.ScheduledDeparture)
-                st.stdMins = Math.ceil(
-                    (dockedInEdmonds.ScheduledDeparture.getTime() - now) /
-                        1000 /
-                        60
+            if (isTravelingToKingston) {
+                // Get the normalized distance traveled. 0 = at kingston, 1 = at edmonds
+                const vesselPos: LatLon = {
+                    lat: vessel.Latitude,
+                    lon: vessel.Longitude,
+                };
+                const distToKingston = haversineDistance(
+                    vesselPos,
+                    KINGSTON_TERMINAL_LATLON
                 );
-            status.push(st);
-        }
+                const distPct = clamp(
+                    0,
+                    1,
+                    Math.round(
+                        100 * (1 - distToKingston / distBetweenTerminals)
+                    ) / 100
+                );
+                // Get minutes until estimated time of arrival
+                const etaMins = vessel.Eta
+                    ? Math.ceil((vessel.Eta.getTime() - now) / 1000 / 60)
+                    : undefined;
+                status.push({
+                    order: 2,
+                    disposition: "traveling-to-kingston",
+                    name: vessel.VesselName,
+                    etaMins,
+                    distPct,
+                });
+                continue;
+            }
 
-        // Is there a vessel traveling to edmonds?
-        let travelingToEdmonds = vessels.find(
-            (vessel) =>
-                vessel.VesselName &&
+            // Is the vessel docked in edmonds, yet to depart for kingston?
+            const isDockedInEdmonds =
+                vessel.AtDock &&
+                vessel.DepartingTerminalID === EDMONDS_TERMINAL_ID;
+            /*
+                && (!!vessel.ArrivingTerminalID ||
+                    !vessel.OpRouteAbbrev?.includes(
+                        ED_KING_SCHED_ROUTE_ABBREV
+                    ));
+                */
+
+            if (isDockedInEdmonds) {
+                const st: DockedInEdmonds = {
+                    order: 3,
+                    disposition: "docked-in-edmonds",
+                    name: vessel.VesselName,
+                };
+                // Get minutes until scheduled time of departure
+                if (vessel.ScheduledDeparture)
+                    st.stdMins = Math.ceil(
+                        (vessel.ScheduledDeparture.getTime() - now) / 1000 / 60
+                    );
+                status.push(st);
+                continue;
+            }
+
+            // Is the vessel traveling to edmonds?
+            let isTravelingToEdmonds =
                 !vessel.AtDock &&
                 vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
                 vessel.ArrivingTerminalID === EDMONDS_TERMINAL_ID &&
-                (!!vessel.LeftDock || vessel.LeftDock === null)
-        );
-        if (!travelingToEdmonds)
-            travelingToEdmonds = vessels.find(
-                (vessel) =>
-                    vessel.VesselName &&
+                (!!vessel.LeftDock || vessel.LeftDock === null);
+
+            if (!isTravelingToEdmonds)
+                isTravelingToEdmonds =
                     !vessel.AtDock &&
                     vessel.DepartingTerminalID === KINGSTON_TERMINAL_ID &&
-                    (!!vessel.LeftDock || vessel.LeftDock === null)
-            );
-        if (travelingToEdmonds) {
-            const vesselPos: LatLon = {
-                lat: travelingToEdmonds.Latitude,
-                lon: travelingToEdmonds.Longitude,
-            };
-            const distToKingston = haversineDistance(
-                vesselPos,
-                KINGSTON_TERMINAL_LATLON
-            );
-            const distPct = clamp(
-                0,
-                1,
-                Math.round(100 * (1 - distToKingston / distBetweenTerminals)) /
-                    100
-            );
-            const etaMins = travelingToEdmonds.Eta
-                ? Math.ceil(
-                      (travelingToEdmonds.Eta.getTime() - now) / 1000 / 60
-                  )
-                : undefined;
-            status.push({
-                disposition: "traveling-to-edmonds",
-                name: travelingToEdmonds.VesselName,
-                etaMins,
-                distPct,
-            });
+                    (!!vessel.LeftDock || vessel.LeftDock === null);
+
+            if (isTravelingToEdmonds) {
+                const vesselPos: LatLon = {
+                    lat: vessel.Latitude,
+                    lon: vessel.Longitude,
+                };
+                const distToKingston = haversineDistance(
+                    vesselPos,
+                    KINGSTON_TERMINAL_LATLON
+                );
+                const distPct = clamp(
+                    0,
+                    1,
+                    Math.round(
+                        100 * (1 - distToKingston / distBetweenTerminals)
+                    ) / 100
+                );
+                const etaMins = vessel.Eta
+                    ? Math.ceil((vessel.Eta.getTime() - now) / 1000 / 60)
+                    : undefined;
+                status.push({
+                    order: 4,
+                    disposition: "traveling-to-edmonds",
+                    name: vessel.VesselName,
+                    etaMins,
+                    distPct,
+                });
+                continue;
+            }
         }
+
+        status.sort((a, b) => {
+            if (a.order === b.order) {
+                if (
+                    (a as any).etaMins !== undefined &&
+                    (b as any).etaMins !== undefined
+                ) {
+                    return (
+                        parseFloat((a as any).etaMins) -
+                        parseFloat((b as any).etaMins)
+                    );
+                } else if ((a as any).etaMins !== undefined) {
+                    return -1;
+                } else if ((b as any).etaMins !== undefined) {
+                    return 1;
+                }
+                if (
+                    (a as any).stdMins !== undefined &&
+                    (b as any).stdMins !== undefined
+                ) {
+                    return (
+                        parseFloat((a as any).stdMins) -
+                        parseFloat((b as any).stdMins)
+                    );
+                } else if ((a as any).stdMins !== undefined) {
+                    return -1;
+                } else if ((b as any).stdMins !== undefined) {
+                    return 1;
+                }
+                return a.name.localeCompare(b.name);
+            }
+            return a.order - b.order;
+        });
 
         console.log(JSON.stringify(status));
         cachedStatus = status;
+
         return {
             status: 200,
             data: status,

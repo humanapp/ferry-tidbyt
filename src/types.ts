@@ -7,12 +7,14 @@ export type ServiceResult<T> = {
 };
 
 export type DockedInKingston = {
+    order: 1;
     disposition: "docked-in-kingston";
     name: string;
     stdMins?: number;
 };
 
 export type TravelingToKingston = {
+    order: 2;
     disposition: "traveling-to-kingston";
     name: string;
     etaMins?: number;
@@ -20,12 +22,14 @@ export type TravelingToKingston = {
 };
 
 export type DockedInEdmonds = {
+    order: 3;
     disposition: "docked-in-edmonds";
     name: string;
     stdMins?: number;
 };
 
 export type TravelingToEdmonds = {
+    order: 4;
     disposition: "traveling-to-edmonds";
     name: string;
     etaMins?: number;

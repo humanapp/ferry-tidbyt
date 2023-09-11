@@ -21,7 +21,7 @@ async function updateTidbytAsync() {
                 "./tidbyt/ferry-status.webp",
                 "base64"
             );
-            if (prevWebp !== webp) {
+            if (false && prevWebp !== webp) {
                 prevWebp = webp;
 
                 const data = {

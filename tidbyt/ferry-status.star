@@ -26,7 +26,7 @@ TRAVEL_DIST = 52
 
 FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
 FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
-FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
+FERRY_STATUS_API = FERRY_STATUS_API_LOCALHOST
 
 DOCKED_IN_KINGSTON = "docked-in-kingston"
 TRAVELING_TO_KINGSTON = "traveling-to-kingston"
@@ -262,26 +262,28 @@ def main(config):
     #status = json.decode("[{\"disposition\":\"traveling-to-kingston\",\"name\":\"Puyallup\",\"etaMins\":13,\"distPct\":0.51},{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Kaleetan\",\"etaMins\":20,\"distPct\":0.12}]")
     #status = json.decode("[{\"disposition\":\"docked-in-kingston\",\"name\":\"Puyallup\",\"stdMins\":10},{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Kaleetan\",\"etaMins\":7,\"distPct\":0.88}]")
     #status = json.decode("[]")
+    #status = json.decode("[{\"order\":1,\"disposition\":\"docked-in-kingston\",\"name\":\"Puyallup\"},{\"order\":1,\"disposition\":\"docked-in-kingston\",\"name\":\"Spokane\"},{\"order\":3,\"disposition\":\"docked-in-edmonds\",\"name\":\"Tacoma\"}]")
 
     if len(status) >= 1:
         largeFerryStatus = status[0]
     else:
         largeFerryStatus = None
-    if len(status) >= 2:
-        smallFerryStatus = status[1]
-    else:
-        smallFerryStatus = None
 
+    children = [render.Image(src=BACKGROUND_IMG)]
+
+    for i in range(1,len(status)):
+      smallFerryStatus = status[i]
+      children.append(renderSmallFerry(smallFerryStatus))
+      children.append(renderSmallWake(smallFerryStatus))
+
+    if largeFerryStatus != None:
+      children.append(renderLargeFerry(status[0]))
+      children.append(renderWake(status[0]))
+
+    children.append(renderDetail(largeFerryStatus))
     return render.Root(
         delay=1000,
         child=render.Stack(
-            children=[
-                render.Image(src=BACKGROUND_IMG),
-                renderSmallFerry(smallFerryStatus),
-                renderSmallWake(smallFerryStatus),
-                renderLargeFerry(largeFerryStatus),
-                renderWake(largeFerryStatus),
-                renderDetail(largeFerryStatus)
-            ],
+            children=children
         )
     )
