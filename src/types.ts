@@ -133,3 +133,12 @@ export type LatLon = {
     lat: number;
     lon: number;
 };
+
+export type WaitTimes = {
+    edmonds: any;
+    kingston: any;
+};
+
+export function fixupWaitTimeFields(waitTime: any) {
+    fixupDateFields(waitTime, "WaitTimeLastUpdated");
+}

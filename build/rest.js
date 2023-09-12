@@ -28,6 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initAsync = void 0;
 const vessels = __importStar(require("./vessels"));
+const waitTimes = __importStar(require("./waitTimes"));
 const server_1 = require("./server");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -70,4 +71,16 @@ async function initAsync() {
     });
 }
 exports.initAsync = initAsync;
+server_1.server.get("/api/waittimes", async (req, res) => {
+    const wt = await waitTimes.getWaitTimesAsync();
+    if (wt) {
+        return res
+            .status(200)
+            .header("Cache-Control", "no-cache, no-store")
+            .send(wt);
+    }
+    else {
+        return res.status(404).send();
+    }
+});
 //# sourceMappingURL=rest.js.map

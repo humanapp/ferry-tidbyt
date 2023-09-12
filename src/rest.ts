@@ -1,4 +1,5 @@
 import * as vessels from "./vessels";
+import * as waitTimes from "./waitTimes";
 import { server } from "./server";
 import fs from "fs";
 import path from "path";
@@ -48,3 +49,15 @@ export async function initAsync() {
         }
     });
 }
+
+server.get("/api/waittimes", async (req, res) => {
+    const wt = await waitTimes.getWaitTimesAsync();
+    if (wt) {
+        return res
+            .status(200)
+            .header("Cache-Control", "no-cache, no-store")
+            .send(wt);
+    } else {
+        return res.status(404).send();
+    }
+});

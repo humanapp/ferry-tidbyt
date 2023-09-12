@@ -2,4 +2,4 @@ var fs = require("fs"),
     file = process.argv[2],
     data = fs.readFileSync(file);
 
-console.log(data.toString("base64"));
+fs.writeFileSync(file + ".txt", data.toString("base64"));
