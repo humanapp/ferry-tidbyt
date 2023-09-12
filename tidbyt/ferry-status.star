@@ -264,7 +264,7 @@ def renderLeftThermo(color):
 
   if color != None:
     return render.Padding(
-      pad=(0, 6, 0, 0),
+      pad=(0, 7, 0, 0),
       child=render.Image(image)
     )
   return render.Box(width=0, height=0)
@@ -279,7 +279,7 @@ def renderRightThermo(color):
 
   if color != None:
     return render.Padding(
-      pad=(57, 6, 0, 0),
+      pad=(57, 7, 0, 0),
       child=render.Image(image)
     )
   return render.Box(width=0, height=0)
