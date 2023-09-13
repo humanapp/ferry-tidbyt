@@ -31,7 +31,7 @@ async function updateTidbytAsync() {
             return console.error(`Tidbyt update failed: ${err.toString()}`);
         }
 
-        if (false && prevWebp !== webp) {
+        if (prevWebp !== webp) {
             prevWebp = webp;
 
             const devices = getSetting("TIDBYTS") as DeviceInfo[];

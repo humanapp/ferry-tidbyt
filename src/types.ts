@@ -162,8 +162,8 @@ export type Bulletins = {
 };
 
 export type WSDOTBulletin = {
-  BulletinTitle: string;
-  BulletinText: string;
+    BulletinTitle: string;
+    BulletinText: string;
 };
 
 export function fixupBulletinFields(bulletin: any) {
