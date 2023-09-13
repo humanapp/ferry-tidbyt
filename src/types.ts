@@ -42,6 +42,14 @@ export type VesselStatus =
     | DockedInEdmonds
     | TravelingToEdmonds;
 
+export type WaitTimeVal = "green" | "yellow" | "orange" | "red";
+
+export type RouteStatus = {
+    waitTimeLeft: WaitTimeVal;
+    waitTimeRight: WaitTimeVal;
+    vessels: VesselStatus[];
+};
+
 export type VesselLocation = {
     VesselID: number;
     VesselName: string;
@@ -135,8 +143,8 @@ export type LatLon = {
 };
 
 export type WaitTimes = {
-    edmonds: any;
-    kingston: any;
+    left: WaitTimeVal;
+    right: WaitTimeVal;
 };
 
 export function fixupWaitTimeFields(waitTime: any) {
@@ -151,6 +159,11 @@ export type DeviceInfo = {
 export type Bulletins = {
     edmonds: any;
     kingston: any;
+};
+
+export type WSDOTBulletin = {
+  BulletinTitle: string;
+  BulletinText: string;
 };
 
 export function fixupBulletinFields(bulletin: any) {

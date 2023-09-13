@@ -1,49 +1,60 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWaitTimesAsync = void 0;
-const types_1 = require("./types");
-const env_1 = require("./env");
 const consts_1 = require("./consts");
-const axios_1 = __importDefault(require("axios"));
-const TERMINALS_BASE_URI = "https://www.wsdot.wa.gov/ferries/api/terminals/rest";
-let lastCacheDate;
-let waitTimes;
-async function checkCacheAsync() {
-    const res = await axios_1.default.get(`${TERMINALS_BASE_URI}/cacheflushdate`);
-    const date = res.data;
-    if (lastCacheDate !== date) {
-        lastCacheDate = date;
-        waitTimes = undefined;
-    }
-}
+const bulletins = __importStar(require("./bulletins"));
 async function getWaitTimesAsync() {
-    await checkCacheAsync();
-    const getWaitTimes = async (termId) => {
-        const res = await axios_1.default.get(`${TERMINALS_BASE_URI}/terminalwaittimes/${termId}?apiaccesscode=${(0, env_1.getSetting)("VESSELWATCH_APIKEY")}`);
-        const waitTimes = res.data;
-        const WT = waitTimes.WaitTimes || [];
-        for (const waitTime of WT) {
-            (0, types_1.fixupWaitTimeFields)(waitTime);
+    var _a, _b;
+    const waitTimeFromBulletins = (terminalName, wsdotbts) => {
+        terminalName = terminalName.toLowerCase();
+        if (!wsdotbts.length)
+            return "green";
+        for (const bt of wsdotbts) {
+            const m = /(\S+) Hour Wait/.exec(bt.BulletinTitle);
+            if (m && m[1]) {
+                if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
+                    continue;
+                switch (m[1].toLowerCase()) {
+                    case "one":
+                        return "yellow";
+                    case "two":
+                        return "orange";
+                    default:
+                        return "red";
+                }
+            }
         }
-        return waitTimes;
+        return "green";
     };
-    if (waitTimes === undefined) {
-        const [edmonds, kingston] = await Promise.all([
-            getWaitTimes(consts_1.EDMONDS_TERMINAL_ID),
-            getWaitTimes(consts_1.KINGSTON_TERMINAL_ID),
-        ]);
-        waitTimes = {
-            edmonds,
-            kingston,
-        };
-    }
-    return {
-        status: 200,
-        data: waitTimes,
+    const bts = await bulletins.getBulletinsAsync();
+    const waitTimes = {
+        left: waitTimeFromBulletins(consts_1.KINGSTON_TERMINAL_NAME, ((_a = bts.data) === null || _a === void 0 ? void 0 : _a.kingston.Bulletins) || []),
+        right: waitTimeFromBulletins(consts_1.EDMONDS_TERMINAL_NAME, ((_b = bts.data) === null || _b === void 0 ? void 0 : _b.edmonds.Bulletins) || []),
     };
+    return waitTimes;
 }
 exports.getWaitTimesAsync = getWaitTimesAsync;
 //# sourceMappingURL=waitTimes.js.map

@@ -1,6 +1,8 @@
 import { LatLon } from "./types";
 import haversineDistance from "haversine-distance";
 
+export const KINGSTON_TERMINAL_NAME = "Kingston";
+export const EDMONDS_TERMINAL_NAME = "Edmonds";
 export const KINGSTON_TERMINAL_ID = 12;
 export const EDMONDS_TERMINAL_ID = 8;
 export const ED_KING_ROUTE_ID = 6;

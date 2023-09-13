@@ -33,9 +33,12 @@ SMALL_WAKE_ANIM_HEIGHT = 1
 DOCK_WIDTH = 6
 TRAVEL_DIST = 52
 
-FERRY_STATUS_API_LOCALHOST = "http://localhost:8082/api/status"
-FERRY_STATUS_API_PRODUCTION = "https://ferry-tidbyt.humanappliance.io/api/status"
-FERRY_STATUS_API = FERRY_STATUS_API_PRODUCTION
+FERRY_API_BASE_LOCALHOST = "http://localhost:8082"
+FERRY_API_BASE_PRODUCTION = "https://ferry-tidbyt.humanappliance.io"
+FERRY_API_BASE = FERRY_API_BASE_LOCALHOST
+
+FERRY_STATUS_API = FERRY_API_BASE + "/api/status"
+FERRY_WAITTIME_API = FERRY_API_BASE + "/api/waittimes"
 
 DOCKED_IN_KINGSTON = "docked-in-kingston"
 TRAVELING_TO_KINGSTON = "traveling-to-kingston"
@@ -291,8 +294,11 @@ def renderRightThermo(color):
   return render.Box(width=0, height=0)
 
 def main(config):
-    res = http.get(FERRY_STATUS_API)
-    status = res.json()
+    statusres = http.get(FERRY_STATUS_API)
+    status = statusres.json()
+    waittimesres = http.get(FERRY_WAITTIME_API)
+    waittimes = waittimesres.json()
+
     #~~some test data~~
     #status = json.decode("[{\"disposition\":\"docked-in-edmonds\",\"name\":\"Kaleetan\",\"stdMins\":0},{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Puyallup\",\"etaMins\":15,\"distPct\":0.3}]")
     #status = json.decode("[{\"disposition\":\"traveling-to-kingston\",\"name\":\"Kaleetan\",\"distPct\":0.98},{\"disposition\":\"traveling-to-edmonds\",\"name\":\"Puyallup\",\"etaMins\":13,\"distPct\":0.45}]")
@@ -326,8 +332,8 @@ def main(config):
 
     children.append(renderDetail(largeFerryStatus))
 
-    children.append(renderLeftThermo("green"))
-    children.append(renderRightThermo("green"))
+    children.append(renderLeftThermo(waittimes["left"]))
+    children.append(renderRightThermo(waittimes["right"]))
 
     return render.Root(
         delay=1000,

@@ -1,57 +1,44 @@
-import { ServiceResult, WaitTimes, fixupWaitTimeFields } from "./types";
-import { getSetting } from "./env";
-import { KINGSTON_TERMINAL_ID, EDMONDS_TERMINAL_ID } from "./consts";
-import axios from "axios";
+import { WaitTimes, WSDOTBulletin, WaitTimeVal } from "./types";
+import { KINGSTON_TERMINAL_NAME, EDMONDS_TERMINAL_NAME } from "./consts";
+import * as bulletins from "./bulletins";
 
-const TERMINALS_BASE_URI =
-    "https://www.wsdot.wa.gov/ferries/api/terminals/rest";
-
-let lastCacheDate: any;
-
-let waitTimes: WaitTimes | undefined;
-
-async function checkCacheAsync() {
-    const res = await axios.get(`${TERMINALS_BASE_URI}/cacheflushdate`);
-    const date = res.data;
-    if (lastCacheDate !== date) {
-        lastCacheDate = date;
-        waitTimes = undefined;
-    }
-}
-
-export async function getWaitTimesAsync(): Promise<ServiceResult<WaitTimes>> {
-    await checkCacheAsync();
-
-    const getWaitTimes = async (termId: number) => {
-        const res = await axios.get(
-            `${TERMINALS_BASE_URI}/terminalwaittimes/${termId}?apiaccesscode=${getSetting(
-                "VESSELWATCH_APIKEY"
-            )}`
-        );
-        const waitTimes = res.data;
-
-        const WT = waitTimes.WaitTimes || [];
-
-        for (const waitTime of WT) {
-            fixupWaitTimeFields(waitTime);
+export async function getWaitTimesAsync(): Promise<WaitTimes> {
+    const waitTimeFromBulletins = (
+        terminalName: string,
+        wsdotbts: WSDOTBulletin[]
+    ): WaitTimeVal => {
+        terminalName = terminalName.toLowerCase();
+        if (!wsdotbts.length) return "green";
+        for (const bt of wsdotbts) {
+            const m = /(\S+) Hour Wait/.exec(bt.BulletinTitle);
+            if (m && m[1]) {
+                if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
+                    continue;
+                switch (m[1].toLowerCase()) {
+                    case "one":
+                        return "yellow";
+                    case "two":
+                        return "orange";
+                    default:
+                        return "red";
+                }
+            }
         }
-        return waitTimes;
+        return "green";
     };
 
-    if (waitTimes === undefined) {
-        const [edmonds, kingston] = await Promise.all([
-            getWaitTimes(EDMONDS_TERMINAL_ID),
-            getWaitTimes(KINGSTON_TERMINAL_ID),
-        ]);
+    const bts = await bulletins.getBulletinsAsync();
 
-        waitTimes = {
-            edmonds,
-            kingston,
-        };
-    }
-
-    return {
-        status: 200,
-        data: waitTimes,
+    const waitTimes: WaitTimes = {
+        left: waitTimeFromBulletins(
+            KINGSTON_TERMINAL_NAME,
+            bts.data?.kingston.Bulletins || []
+        ),
+        right: waitTimeFromBulletins(
+            EDMONDS_TERMINAL_NAME,
+            bts.data?.edmonds.Bulletins || []
+        ),
     };
+
+    return waitTimes;
 }

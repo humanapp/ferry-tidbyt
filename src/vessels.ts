@@ -7,9 +7,13 @@ import {
     LatLon,
     DockedInEdmonds,
     DockedInKingston,
+    RouteStatus,
+    WSDOTBulletin,
+    WaitTimeVal,
 } from "./types";
 import { getSetting } from "./env";
 import { getScheduleAsync } from "./schedule";
+import * as bulletins from "./bulletins";
 import {
     DISTANCE_BETWEEN_TERMINALS,
     EDMONDS_TERMINAL_ID,
