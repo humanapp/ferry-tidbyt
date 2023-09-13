@@ -142,3 +142,8 @@ export type WaitTimes = {
 export function fixupWaitTimeFields(waitTime: any) {
     fixupDateFields(waitTime, "WaitTimeLastUpdated");
 }
+
+export type DeviceInfo = {
+    deviceId: string;
+    apikey: string;
+};
