@@ -1,6 +1,7 @@
 import * as vessels from "./vessels";
 import * as waitTimes from "./waitTimes";
 import * as bulletins from "./bulletins";
+import * as schedule from "./schedule";
 import { server } from "./server";
 import fs from "fs";
 import path from "path";
@@ -49,40 +50,52 @@ export async function initAsync() {
             res.send(s);
         }
     });
+
+    server.get("/api/waittimes", async (req, res) => {
+        const wt = await waitTimes.getWaitTimesAsync();
+        if (wt) {
+            return res
+                .status(200)
+                .header("Cache-Control", "no-cache, no-store")
+                .send(wt);
+        } else {
+            return res.status(404).send();
+        }
+    });
+
+    server.get("/api/bulletins", async (req, res) => {
+        const bt = await bulletins.getBulletinsAsync();
+        if (bt) {
+            return res
+                .status(200)
+                .header("Cache-Control", "no-cache, no-store")
+                .send(bt);
+        } else {
+            return res.status(404).send();
+        }
+    });
+
+    server.get("/api/vessels", async (req, res) => {
+        const vs = await vessels.getVesselsOnRouteAsync();
+        if (vs) {
+            return res
+                .status(200)
+                .header("Cache-Control", "no-cache, no-store")
+                .send(vs);
+        } else {
+            return res.status(404).send();
+        }
+    });
+
+    server.get("/api/schedule", async (req, res) => {
+        const sh = await schedule.getScheduleAsync();
+        if (sh) {
+            return res
+                .status(200)
+                .header("Cache-Control", "no-cache, no-store")
+                .send(sh);
+        } else {
+            return res.status(404).send();
+        }
+    });
 }
-
-server.get("/api/waittimes", async (req, res) => {
-    const wt = await waitTimes.getWaitTimesAsync();
-    if (wt) {
-        return res
-            .status(200)
-            .header("Cache-Control", "no-cache, no-store")
-            .send(wt);
-    } else {
-        return res.status(404).send();
-    }
-});
-
-server.get("/api/bulletins", async (req, res) => {
-    const bt = await bulletins.getBulletinsAsync();
-    if (bt) {
-        return res
-            .status(200)
-            .header("Cache-Control", "no-cache, no-store")
-            .send(bt);
-    } else {
-        return res.status(404).send();
-    }
-});
-
-server.get("/api/vessels", async (req, res) => {
-    const vs = await vessels.getVesselsOnRouteAsync();
-    if (vs) {
-        return res
-            .status(200)
-            .header("Cache-Control", "no-cache, no-store")
-            .send(vs);
-    } else {
-        return res.status(404).send();
-    }
-});
