@@ -74,3 +74,15 @@ server.get("/api/bulletins", async (req, res) => {
         return res.status(404).send();
     }
 });
+
+server.get("/api/vessels", async (req, res) => {
+    const vs = await vessels.getVesselsOnRouteAsync();
+    if (vs) {
+        return res
+            .status(200)
+            .header("Cache-Control", "no-cache, no-store")
+            .send(vs);
+    } else {
+        return res.status(404).send();
+    }
+});

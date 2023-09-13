@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startAsync = exports.getVesselCurrentStatus = void 0;
+exports.startAsync = exports.getVesselsOnRouteAsync = exports.getVesselCurrentStatus = void 0;
 const axios_1 = __importDefault(require("axios"));
 const types_1 = require("./types");
 const env_1 = require("./env");
@@ -55,6 +55,7 @@ async function getVesselsOnRouteAsync() {
         data: vessels,
     };
 }
+exports.getVesselsOnRouteAsync = getVesselsOnRouteAsync;
 async function refreshVesselStatusAsync() {
     var _a;
     try {

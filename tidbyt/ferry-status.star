@@ -79,7 +79,7 @@ def renderDetail(ferry):
                     expanded=True,
                     main_align="center",
                     children=[
-                        render.Text(content=text, color="#d3e6f3")
+                        render.Text(content=name, color="#d3e6f3")
                     ]
                 ),
                 render.Row(
@@ -88,7 +88,7 @@ def renderDetail(ferry):
                     children=[
                         render.Padding(
                             pad=(0, 1, 0, 0),
-                            child=render.Text(content=name, font="tom-thumb", color="#9bc7e5")
+                            child=render.Text(content=text, font="tom-thumb", color="#9bc7e5")
                         )
                     ]
                 )

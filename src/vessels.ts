@@ -53,7 +53,7 @@ async function getVesselLocationAsync(
     };
 }
 
-async function getVesselsOnRouteAsync(): Promise<
+export async function getVesselsOnRouteAsync(): Promise<
     ServiceResult<VesselLocation[]>
 > {
     const vesres = await axios.get(
