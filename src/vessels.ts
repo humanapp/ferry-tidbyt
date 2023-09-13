@@ -110,9 +110,30 @@ async function refreshVesselStatusAsync(): Promise<
         // Get the distance between the terminals
         const distBetweenTerminals = DISTANCE_BETWEEN_TERMINALS();
 
+        const bullsres = await bulletins.getBulletinsAsync();
+        const bulls =
+            (bullsres.data?.edmonds?.Bulletins as WSDOTBulletin[]) || [];
+
+        const hasOutOfServiceAlert = (name: string): boolean => {
+            name = name.toLowerCase();
+
+            for (let bull of bulls) {
+                const text = bull.BulletinText.toLowerCase();
+                if (/out of service/.test(text)) {
+                    if (text.includes(name)) return true;
+                }
+            }
+            return false;
+        };
+
         const status: VesselStatus[] = [];
 
         for (const vessel of vessels) {
+            // Ensure vessel has a name
+            if (!vessel.VesselName) continue;
+            // Is the vessel out of service?
+            if (hasOutOfServiceAlert(vessel.VesselName)) continue;
+
             // Is the vessel docked in kingston?
             const isDockedInKingston =
                 vessel.AtDock &&

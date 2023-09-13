@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,6 +30,7 @@ exports.startAsync = exports.getVesselsOnRouteAsync = exports.getVesselCurrentSt
 const axios_1 = __importDefault(require("axios"));
 const types_1 = require("./types");
 const env_1 = require("./env");
+const bulletins = __importStar(require("./bulletins"));
 const consts_1 = require("./consts");
 const haversine_distance_1 = __importDefault(require("haversine-distance"));
 const util_1 = require("./util");
@@ -57,7 +81,7 @@ async function getVesselsOnRouteAsync() {
 }
 exports.getVesselsOnRouteAsync = getVesselsOnRouteAsync;
 async function refreshVesselStatusAsync() {
-    var _a;
+    var _a, _b, _c;
     try {
         const now = Date.now();
         // Fetch all active vessels on the route
@@ -65,8 +89,27 @@ async function refreshVesselStatusAsync() {
         const vessels = (_a = getVesOnRoute.data) !== null && _a !== void 0 ? _a : [];
         // Get the distance between the terminals
         const distBetweenTerminals = (0, consts_1.DISTANCE_BETWEEN_TERMINALS)();
+        const bullsres = await bulletins.getBulletinsAsync();
+        const bulls = ((_c = (_b = bullsres.data) === null || _b === void 0 ? void 0 : _b.edmonds) === null || _c === void 0 ? void 0 : _c.Bulletins) || [];
+        const hasOutOfServiceAlert = (name) => {
+            name = name.toLowerCase();
+            for (let bull of bulls) {
+                const text = bull.BulletinText.toLowerCase();
+                if (/out of service/.test(text)) {
+                    if (text.includes(name))
+                        return true;
+                }
+            }
+            return false;
+        };
         const status = [];
         for (const vessel of vessels) {
+            // Ensure vessel has a name
+            if (!vessel.VesselName)
+                continue;
+            // Is the vessel out of service?
+            if (hasOutOfServiceAlert(vessel.VesselName))
+                continue;
             // Is the vessel docked in kingston?
             const isDockedInKingston = vessel.AtDock &&
                 vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID;
