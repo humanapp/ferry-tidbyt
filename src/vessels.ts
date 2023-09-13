@@ -118,9 +118,12 @@ async function refreshVesselStatusAsync(): Promise<
             name = name.toLowerCase();
 
             for (let bull of bulls) {
-                const text = bull.BulletinText.toLowerCase();
-                if (/out of service/.test(text)) {
-                    if (text.includes(name)) return true;
+                const lower = bull.BulletinText.toLowerCase();
+                const texts = lower.split("<p>");
+                for (const text of texts) {
+                    if (/out of service/.test(text)) {
+                        if (text.includes(name)) return true;
+                    }
                 }
             }
             return false;
