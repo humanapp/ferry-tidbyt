@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fixupWaitTimeFields = exports.fixupScheduleFields = exports.fixupVesselLocationFields = void 0;
+exports.fixupBulletinFields = exports.fixupWaitTimeFields = exports.fixupScheduleFields = exports.fixupVesselLocationFields = void 0;
 const util_1 = require("./util");
 function fixupVesselLocationFields(vessel) {
     (0, util_1.fixupDateFields)(vessel, "LeftDock", "Eta", "ScheduledDeparture", "TimeStamp");
@@ -18,4 +18,8 @@ function fixupWaitTimeFields(waitTime) {
     (0, util_1.fixupDateFields)(waitTime, "WaitTimeLastUpdated");
 }
 exports.fixupWaitTimeFields = fixupWaitTimeFields;
+function fixupBulletinFields(bulletin) {
+    (0, util_1.fixupDateFields)(bulletin, "BulletinLastUpdated", "BulletinLastUpdatedSortable");
+}
+exports.fixupBulletinFields = fixupBulletinFields;
 //# sourceMappingURL=types.js.map

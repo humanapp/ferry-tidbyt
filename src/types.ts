@@ -147,3 +147,16 @@ export type DeviceInfo = {
     deviceId: string;
     apikey: string;
 };
+
+export type Bulletins = {
+    edmonds: any;
+    kingston: any;
+};
+
+export function fixupBulletinFields(bulletin: any) {
+    fixupDateFields(
+        bulletin,
+        "BulletinLastUpdated",
+        "BulletinLastUpdatedSortable"
+    );
+}

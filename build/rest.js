@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initAsync = void 0;
 const vessels = __importStar(require("./vessels"));
 const waitTimes = __importStar(require("./waitTimes"));
+const bulletins = __importStar(require("./bulletins"));
 const server_1 = require("./server");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -78,6 +79,18 @@ server_1.server.get("/api/waittimes", async (req, res) => {
             .status(200)
             .header("Cache-Control", "no-cache, no-store")
             .send(wt);
+    }
+    else {
+        return res.status(404).send();
+    }
+});
+server_1.server.get("/api/bulletins", async (req, res) => {
+    const bt = await bulletins.getBulletinsAsync();
+    if (bt) {
+        return res
+            .status(200)
+            .header("Cache-Control", "no-cache, no-store")
+            .send(bt);
     }
     else {
         return res.status(404).send();

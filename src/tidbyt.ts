@@ -77,5 +77,5 @@ async function updateTidbytAsync() {
 }
 
 export async function startAsync() {
-  setTimeout(async () => await updateTidbytAsync(), 2000);
+    setTimeout(async () => await updateTidbytAsync(), 2000);
 }
