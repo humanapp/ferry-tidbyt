@@ -34,6 +34,8 @@ async function getWaitTimesAsync() {
             return "green";
         for (const bt of wsdotbts) {
             let m = /([\d\S]+)[\s-]+hour wait/i.exec(bt.BulletinTitle);
+            if (!m || !m[1])
+                m = /([\d\S]+)[\s-]+hr\.? wait/i.exec(bt.BulletinTitle);
             if (m && m[1]) {
                 if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
                     continue;
@@ -49,6 +51,8 @@ async function getWaitTimesAsync() {
                 }
             }
             m = /([\d\S]+)[\s-]+minute wait/i.exec(bt.BulletinTitle);
+            if (!m || m[1])
+                m = /([\d\S]+)[\s-]+min\.? wait/i.exec(bt.BulletinTitle);
             if (m && m[1]) {
                 if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
                     continue;
