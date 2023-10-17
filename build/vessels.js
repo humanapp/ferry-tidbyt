@@ -97,7 +97,7 @@ async function refreshVesselStatusAsync() {
                 const lower = bull.BulletinText.toLowerCase();
                 const texts = lower.split("<p>");
                 for (const text of texts) {
-                    if (/out of service/.test(text)) {
+                    if (/out of service/i.test(text) && !/elevator/i.test(text)) {
                         if (text.includes(name))
                             return true;
                     }
