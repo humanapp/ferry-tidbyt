@@ -57,6 +57,8 @@ async function getWaitTimesAsync() {
                 if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
                     continue;
                 switch (m[1].toLowerCase()) {
+                    case "60":
+                        return "yellow";
                     case "90":
                         return "orange";
                     default:
