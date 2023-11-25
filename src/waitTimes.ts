@@ -27,9 +27,9 @@ export async function getWaitTimesAsync(): Promise<WaitTimes> {
                         return "red";
                 }
             }
-            m = /([\d\S]+)[\s-]+minute wait/i.exec(bt.BulletinTitle);
-            if (!m || m[1])
-                m = /([\d\S]+)[\s-]+min\.? wait/i.exec(bt.BulletinTitle);
+            m = /(\b\d+)[\s-]+minute wait/i.exec(bt.BulletinTitle);
+            if (!m || !m[1])
+                m = /(\b\d+)[\s-]+min\.? wait/i.exec(bt.BulletinTitle);
             if (m && m[1]) {
                 if (!bt.BulletinTitle.toLowerCase().includes(terminalName))
                     continue;
