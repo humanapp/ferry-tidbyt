@@ -113,8 +113,7 @@ async function refreshVesselStatusAsync() {
             // Is the vessel out of service?
             //if (hasOutOfServiceAlert(vessel.VesselName)) continue;
             // Is the vessel out of service?
-            if (/out of service/i.test(vessel.VesselWatchShutMsg))
-                continue;
+            //if (/out of service/i.test(vessel.VesselWatchShutMsg)) continue;
             // Is the vessel docked in kingston?
             const isDockedInKingston = vessel.AtDock &&
                 vessel.DepartingTerminalID === consts_1.KINGSTON_TERMINAL_ID;
