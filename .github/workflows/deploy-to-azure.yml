@@ -1,0 +1,32 @@
+name: Deploy to Azure
+
+# Allow manual trigger
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Step 2: Log in to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.FERRIES_TIDBYT_AZURE_CREDENTIALS }}
+
+      # Step 3: Build and push the Docker image to Azure Container Registry
+      - name: Build and Push Docker Image to ACR
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          registryUrl: ferriesregistry.azurecr.io
+          registryUsername: ${{ secrets.FERRIES_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.FERRIES_REGISTRY_PASSWORD }}
+          containerAppName: ferries-tidbyt
+          resourceGroup: ferries-tidbyt-rg
+          imageToBuild: ferriesregistry.azurecr.io/ferries-tidbyt:${{ github.sha }}
