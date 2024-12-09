@@ -8,9 +8,7 @@
         "clean": "tsc --build --clean && rimraf ./build",
         "start": "node build/index.js",
         "debug": "npm run build && npm run start",
-        "prettier": "prettier --write ./src/**/*.ts",
-        "build-docker": "docker build -t ferry-tidbyt .",
-        "run-docker": "docker run -p 80:80 ferry-tidbyt"
+        "prettier": "prettier --write ./src/**/*.ts"
     },
     "author": "",
     "license": "ISC",
