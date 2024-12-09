@@ -1,15 +1,7 @@
-name: Trigger auto deployment for ferries
+name: Deploy to Azure
 
 # When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/ferries-AutoDeployTrigger-f19454a7-6a45-4464-92f4-1da96486bc62.yml'
-
   # Allow manual trigger 
   workflow_dispatch:      
 
