@@ -34,7 +34,7 @@ DOCK_WIDTH = 6
 TRAVEL_DIST = 52
 
 FERRY_API_BASE_LOCALHOST = "http://localhost:8082"
-FERRY_API_BASE_PRODUCTION = "https://ferry-tidbyt.humanappliance.io"
+FERRY_API_BASE_PRODUCTION = "https://ferries.greendune-8f7fabdc.eastus.azurecontainerapps.io"
 FERRY_API_BASE = FERRY_API_BASE_PRODUCTION
 
 FERRY_STATUS_API = FERRY_API_BASE + "/api/status"
